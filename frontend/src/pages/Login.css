@@ -1,0 +1,167 @@
+/* =============================================
+   Login Page — Light Wood Theme
+   ============================================= */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 40px 24px;
+  background: var(--gradient-hero);
+  overflow: hidden;
+}
+
+/* Decorative circles (logo motif) */
+.login-page__orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.login-page__orb--1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(181, 114, 42, 0.10) 0%, transparent 70%);
+  top: -150px;
+  left: -150px;
+}
+.login-page__orb--2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(143, 85, 25, 0.08) 0%, transparent 70%);
+  bottom: -100px;
+  right: -100px;
+}
+
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 460px;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Logo */
+.login-card__logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.login-card__logo-img {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--border-card);
+  box-shadow: 0 4px 20px rgba(181, 114, 42, 0.2);
+}
+
+/* Tabs */
+.login-card__tabs {
+  display: flex;
+  background: var(--bg-section);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  gap: 4px;
+  border: 1.5px solid var(--border-light);
+}
+.login-card__tabs button {
+  flex: 1;
+  padding: 10px;
+  border-radius: calc(var(--radius-md) - 4px);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: var(--transition);
+}
+.login-card__tabs button.active {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: 0 2px 10px rgba(181, 114, 42, 0.35);
+}
+
+/* Title */
+.login-card__title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--text-primary);
+  margin-bottom: -6px;
+}
+.login-card__sub {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Form */
+.login-card__form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.login-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.login-card__field label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.login-card__input-wrap { position: relative; }
+.login-card__input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.login-card__input-wrap .input-field { padding-left: 42px; }
+
+.login-card__eye {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.login-card__eye:hover { color: var(--primary); }
+
+/* Footer text */
+.login-card__footer {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+.login-card__footer button {
+  background: none;
+  color: var(--primary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: var(--transition);
+}
+.login-card__footer button:hover { text-decoration: underline; }
+
+.login-card__back { text-align: center; }
+.login-card__back a {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.login-card__back a:hover { color: var(--primary); }
