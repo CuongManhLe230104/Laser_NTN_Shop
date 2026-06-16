@@ -5,14 +5,26 @@ const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 
+const path = require('path');
+const fs = require('fs');
+
 const { connectWithRetry } = require('./config/db');
 const authRoutes = require('./routes/auth.routes');
 const productRoutes = require('./routes/product.routes');
 const cartRoutes = require('./routes/cart.routes');
 const categoryRoutes = require('./routes/category.routes');
+const adminRoutes = require('./routes/admin.routes');
+const orderRoutes = require('./routes/order.routes');
+const chatRoutes = require('./routes/chat.routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Ensure uploads folder exists
+const uploadDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // =============================================
 // MIDDLEWARE
@@ -27,6 +39,9 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static uploads folder
+app.use('/api/uploads', express.static(uploadDir));
 
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
@@ -93,6 +108,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/chat', chatRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

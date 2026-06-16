@@ -120,7 +120,7 @@ const slugify = (text) => {
  * Admin only
  */
 const createProduct = async (req, res) => {
-  const { category_id, name, slug, description, price, stock, image_url, is_active } = req.body;
+  const { category_id, name, slug, description, price, stock, image_url, is_active, extra_images } = req.body;
 
   if (!category_id || !name || price === undefined || stock === undefined) {
     return res.status(400).json({
@@ -145,8 +145,8 @@ const createProduct = async (req, res) => {
     }
 
     const [result] = await pool.execute(
-      `INSERT INTO products (category_id, name, slug, description, price, stock, image_url, is_active)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO products (category_id, name, slug, description, price, stock, image_url, is_active, extra_images)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         category_id,
         name,
@@ -156,6 +156,7 @@ const createProduct = async (req, res) => {
         stock,
         image_url || '',
         is_active !== undefined ? is_active : true,
+        extra_images || null,
       ]
     );
 
@@ -172,6 +173,7 @@ const createProduct = async (req, res) => {
         stock,
         image_url,
         is_active: is_active !== undefined ? is_active : true,
+        extra_images,
       },
     });
   } catch (error) {
@@ -186,7 +188,7 @@ const createProduct = async (req, res) => {
  */
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { category_id, name, slug, description, price, stock, image_url, is_active } = req.body;
+  const { category_id, name, slug, description, price, stock, image_url, is_active, extra_images } = req.body;
 
   if (!category_id || !name || price === undefined || stock === undefined) {
     return res.status(400).json({
@@ -221,7 +223,7 @@ const updateProduct = async (req, res) => {
 
     await pool.execute(
       `UPDATE products 
-       SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, stock = ?, image_url = ?, is_active = ?
+       SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, stock = ?, image_url = ?, is_active = ?, extra_images = ?
        WHERE id = ?`,
       [
         category_id,
@@ -232,6 +234,7 @@ const updateProduct = async (req, res) => {
         stock,
         image_url || '',
         is_active !== undefined ? is_active : true,
+        extra_images || null,
         id,
       ]
     );
@@ -249,6 +252,7 @@ const updateProduct = async (req, res) => {
         stock,
         image_url,
         is_active: is_active !== undefined ? is_active : true,
+        extra_images,
       },
     });
   } catch (error) {

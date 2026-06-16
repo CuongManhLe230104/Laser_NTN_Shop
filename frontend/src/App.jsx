@@ -5,8 +5,20 @@ import Home from './pages/Home'
 import Products from './pages/Products'
 import Login from './pages/Login'
 import Cart from './pages/Cart'
+import Checkout from './pages/Checkout'
+import Orders from './pages/Orders'
+import CustomOrder from './pages/CustomOrder'
+import ChatWidget from './components/ChatWidget'
+import ProductDetail from './pages/ProductDetail'
 import AdminLayout from './admin/AdminLayout'
 import AdminDashboard from './admin/AdminDashboard'
+import AdminProducts from './admin/AdminProducts'
+import AdminCategories from './admin/AdminCategories'
+import AdminUsers from './admin/AdminUsers'
+import AdminAnalytics from './admin/AdminAnalytics'
+import AdminOrders from './admin/AdminOrders'
+import AdminSettings from './admin/AdminSettings'
+import AdminChat from './admin/AdminChat'
 
 // Protected route — redirect to /login if not logged in
 const ProtectedRoute = ({ children }) => {
@@ -23,36 +35,49 @@ const AdminRoute = ({ children }) => {
   return children
 }
 
+// Helper: wrap a component in AdminRoute + AdminLayout
+const AdminPage = ({ children }) => (
+  <AdminRoute>
+    <AdminLayout>{children}</AdminLayout>
+  </AdminRoute>
+)
+
+// Helper: user page (Navbar + Footer + ProtectedRoute + ChatWidget)
+const UserPage = ({ children, protect = false }) => {
+  const content = (
+    <>
+      <Navbar />
+      <main className="page-wrapper">{children}</main>
+      <Footer />
+      <ChatWidget />
+    </>
+  )
+  return protect ? <ProtectedRoute>{content}</ProtectedRoute> : content
+}
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ---- Public / User routes (with Navbar + Footer) ---- */}
-        <Route path="/" element={<><Navbar /><main className="page-wrapper"><Home /></main><Footer /></>} />
-        <Route path="/products" element={<><Navbar /><main className="page-wrapper"><Products /></main><Footer /></>} />
-        <Route path="/login" element={<><Navbar /><main className="page-wrapper"><Login /></main><Footer /></>} />
-        <Route path="/cart" element={
-          <ProtectedRoute>
-            <><Navbar /><main className="page-wrapper"><Cart /></main><Footer /></>
-          </ProtectedRoute>
-        } />
+        {/* ---- Public / User routes ---- */}
+        <Route path="/"         element={<UserPage><Home /></UserPage>} />
+        <Route path="/products" element={<UserPage><Products /></UserPage>} />
+        <Route path="/products/:slug" element={<UserPage><ProductDetail /></UserPage>} />
+        <Route path="/login"    element={<UserPage><Login /></UserPage>} />
+        <Route path="/cart"     element={<UserPage protect><Cart /></UserPage>} />
+        <Route path="/checkout"     element={<UserPage protect><Checkout /></UserPage>} />
+        <Route path="/orders"       element={<UserPage protect><Orders /></UserPage>} />
+        <Route path="/custom-order" element={<UserPage><CustomOrder /></UserPage>} />
 
-        {/* ---- Admin routes (AdminLayout — no Navbar/Footer) ---- */}
-        <Route path="/admin" element={
-          <AdminRoute>
-            <AdminLayout><AdminDashboard /></AdminLayout>
-          </AdminRoute>
-        } />
-        <Route path="/admin/*" element={
-          <AdminRoute>
-            <AdminLayout>
-              <div style={{ padding: '40px', textAlign: 'center', color: '#9E8060' }}>
-                <h2 style={{ fontFamily: 'Outfit', fontSize: '1.5rem', marginBottom: 8 }}>Trang đang xây dựng 🚧</h2>
-                <p>Chức năng này sẽ sớm được ra mắt.</p>
-              </div>
-            </AdminLayout>
-          </AdminRoute>
-        } />
+        {/* ---- Admin routes ---- */}
+        <Route path="/admin"            element={<AdminPage><AdminDashboard /></AdminPage>} />
+        <Route path="/admin/products"   element={<AdminPage><AdminProducts /></AdminPage>} />
+        <Route path="/admin/categories" element={<AdminPage><AdminCategories /></AdminPage>} />
+        <Route path="/admin/users"      element={<AdminPage><AdminUsers /></AdminPage>} />
+        <Route path="/admin/analytics"  element={<AdminPage><AdminAnalytics /></AdminPage>} />
+        <Route path="/admin/orders"     element={<AdminPage><AdminOrders /></AdminPage>} />
+        <Route path="/admin/settings"   element={<AdminPage><AdminSettings /></AdminPage>} />
+        <Route path="/admin/chat"       element={<AdminPage><AdminChat /></AdminPage>} />
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />

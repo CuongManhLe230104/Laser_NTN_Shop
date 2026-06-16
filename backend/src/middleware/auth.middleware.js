@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
  * Adds `req.user` if valid
  */
 const verifyToken = (req, res, next) => {
+  console.log(`[DEBUG verifyToken] ${req.method} ${req.originalUrl}`);
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // "Bearer <token>"
 

@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    strictPort: false,   // tự động dùng port khác nếu 3000 bị chiếm
+    strictPort: true,    // luôn dùng port 3000, báo lỗi nếu bị chiếm (tránh chạy 2 host)
     proxy: {
       '/api': {
         // Khi chạy npm run dev trực tiếp → backend ở localhost:5000

@@ -48,6 +48,11 @@ const Icon = {
       <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
     </svg>
   ),
+  Chat: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+  ),
 }
 
 const navItems = [
@@ -60,10 +65,11 @@ const navItems = [
   {
     section: 'Quản lý',
     items: [
-      { label: 'Sản phẩm', icon: Icon.Products, path: '/admin/products', badge: '8' },
-      { label: 'Danh mục', icon: Icon.Categories, path: '/admin/categories', badge: null },
-      { label: 'Đơn hàng', icon: Icon.Orders, path: '/admin/orders', badge: '3' },
-      { label: 'Người dùng', icon: Icon.Users, path: '/admin/users', badge: null },
+      {label: 'Sản phẩm', icon: Icon.Products, path: '/admin/products', badge: '8'},
+      {label: 'Danh mục', icon: Icon.Categories, path: '/admin/categories', badge: null},
+      {label: 'Đơn hàng', icon: Icon.Orders, path: '/admin/orders', badge: '3'},
+      {label: 'Người dùng', icon: Icon.Users, path: '/admin/users', badge: null},
+      {label: 'Tin nhắn', icon: Icon.Chat, path: '/admin/chat', badge: null},
     ],
   },
   {

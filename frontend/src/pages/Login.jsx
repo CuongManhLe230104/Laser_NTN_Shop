@@ -33,7 +33,7 @@ export default function Login() {
       const { token, user } = res.data
       localStorage.setItem('token', token)
       localStorage.setItem('user', JSON.stringify(user))
-      navigate('/')
+      navigate(user.role === 'admin' ? '/admin' : '/')
     } catch (err) {
       setError(err.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.')
     } finally {

@@ -71,4 +71,47 @@ export const cartAPI = {
   clearCart: () => api.delete('/cart'),
 }
 
-export default api
+// ---- Orders API ----
+export const orderAPI = {
+  create: (data)     => api.post('/orders', data),
+  getAll: ()         => api.get('/orders'),
+  getById: (id)      => api.get(`/orders/${id}`),
+  cancel: (id)       => api.post(`/orders/${id}/cancel`),
+}
+
+// ---- Admin API ----
+export const adminAPI = {
+  // Dashboard
+  getStats: () => api.get('/admin/stats'),
+  // Products (admin — all including inactive)
+  getProducts: (params) => api.get('/admin/products', { params }),
+  // Users
+  getUsers: (params) => api.get('/admin/users', { params }),
+  updateUserRole: (id, role) => api.put(`/admin/users/${id}/role`, { role }),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
+  // Orders
+  getOrders: (params) => api.get('/admin/orders', { params }),
+  updateOrderStatus: (id, status) => api.put(`/admin/orders/${id}/status`, { status }),
+  // File Uploads
+  uploadSingle: (formData) => api.post('/admin/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+  uploadMultiple: (formData) => api.post('/admin/upload-multiple', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+}
+
+// ---- Chat API ----
+export const chatAPI = {
+  // User side
+  getMessages: () => api.get('/chat/messages'),
+  sendMessage: (content) => api.post('/chat/messages', { content }),
+  
+  // Admin side
+  getConversationsAdmin: () => api.get('/chat/admin/conversations'),
+  getMessagesAdmin: (id) => api.get(`/chat/admin/conversations/${id}/messages`),
+  sendMessageAdmin: (id, content) => api.post(`/chat/admin/conversations/${id}/messages`, { content }),
+  closeConversationAdmin: (id) => api.put(`/chat/admin/conversations/${id}/close`),
+}
+
+export default api;

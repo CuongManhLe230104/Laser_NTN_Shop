@@ -3,7 +3,7 @@ import { FiMail, FiPhone, FiMapPin, FiFacebook, FiYoutube } from 'react-icons/fi
 import './Footer.css'
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = 2019
 
   return (
     <footer className="footer">
@@ -18,11 +18,10 @@ export default function Footer() {
             </div>
           </div>
           <p className="footer__tagline">
-            Chuyên cung cấp máy laser, phụ kiện và vật liệu laser chất lượng cao, chính hãng tại Việt Nam.
+            Chuyên cung cấp các sản phẩm handmade, quà tặng độc đáo, giá rẻ và nhiều mặt hàng hấp dẫn khác.
           </p>
           <div className="footer__socials">
-            <a href="#" aria-label="Facebook"><FiFacebook size={18} /></a>
-            <a href="#" aria-label="YouTube"><FiYoutube size={18} /></a>
+            <a href="https://www.facebook.com/HandmadeShopNTN68" aria-label="Facebook"><FiFacebook size={18} /></a>
           </div>
         </div>
 
@@ -52,9 +51,9 @@ export default function Footer() {
         <div className="footer__col">
           <h4>Liên Hệ</h4>
           <ul>
-            <li><FiPhone size={14} /> 0123 456 789</li>
-            <li><FiMail size={14} /> info@laserntn.vn</li>
-            <li><FiMapPin size={14} /> TP. Hồ Chí Minh, Việt Nam</li>
+            <li><FiPhone size={14} />0986814523</li>
+            <li><FiMail size={14} /> laserntn2019@gmail.com</li>
+            <li><a href="https://www.google.com/maps/place/Laser+NTN/@10.8099088,106.7848644,17z/data=!4m14!1m7!3m6!1s0x31752b8c9dd357e1:0xc75bc2474f1be888!2sLaser+NTN!8m2!3d10.8099035!4d106.7874393!16s%2Fg%2F11hd_hb9qc!3m5!1s0x31752b8c9dd357e1:0xc75bc2474f1be888!8m2!3d10.8099035!4d106.7874393!16s%2Fg%2F11hd_hb9qc?entry=ttu&g_ep=EgoyMDI2MDYxMC4wIKXMDSoASAFQAw%3D%3D"><FiMapPin size={14} /> Laser NTN, Ho Chi Minh City, Vietnam, 700000</a></li>
           </ul>
         </div>
       </div>
