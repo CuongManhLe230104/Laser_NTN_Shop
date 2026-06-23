@@ -51,11 +51,39 @@ const initChatTables = async () => {
       await pool.query(`ALTER TABLE products ADD COLUMN extra_images TEXT DEFAULT NULL`);
       console.log('✅ Added extra_images column to products table.');
     } catch (alterError) {
-      // Mã lỗi ER_DUP_FIELDNAME (1060) nghĩa là cột đã tồn tại, có thể bỏ qua an toàn
       if (alterError.errno !== 1060) {
         console.error('⚠️ Lỗi thay đổi bảng products:', alterError);
       }
     }
+
+    // Thêm cột google_id vào bảng users (cho Google OAuth)
+    try {
+      await pool.query(`ALTER TABLE users ADD COLUMN google_id VARCHAR(255) DEFAULT NULL`);
+      console.log('✅ Added google_id column to users table.');
+    } catch (alterError) {
+      if (alterError.errno !== 1060) {
+        console.error('⚠️ Lỗi thêm cột google_id:', alterError);
+      }
+    }
+
+    // Thêm cột avatar vào bảng users
+    try {
+      await pool.query(`ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT NULL`);
+      console.log('✅ Added avatar column to users table.');
+    } catch (alterError) {
+      if (alterError.errno !== 1060) {
+        console.error('⚠️ Lỗi thêm cột avatar:', alterError);
+      }
+    }
+
+    // Cho phép password NULL (user Google không cần mật khẩu)
+    try {
+      await pool.query(`ALTER TABLE users MODIFY COLUMN password VARCHAR(255) NULL`);
+      console.log('✅ Modified password column to allow NULL.');
+    } catch (alterError) {
+      console.error('⚠️ Lỗi modify cột password:', alterError);
+    }
+
   } catch (err) {
     console.error('❌ Failed to initialize chat tables:', err);
   }

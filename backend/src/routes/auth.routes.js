@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, getMe } = require('../controllers/auth.controller');
+const { register, login, googleLogin, getMe } = require('../controllers/auth.controller');
 const { verifyToken } = require('../middleware/auth.middleware');
 
 /**
@@ -92,6 +92,29 @@ router.post('/register', register);
  *             schema: { $ref: '#/components/schemas/ErrorResponse' }
  */
 router.post('/login', login);
+
+/**
+ * @swagger
+ * /api/auth/google:
+ *   post:
+ *     summary: Đăng nhập bằng Google OAuth
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [credential]
+ *             properties:
+ *               credential:
+ *                 type: string
+ *                 description: Google ID Token từ @react-oauth/google
+ *     responses:
+ *       200:
+ *         description: Đăng nhập thành công — trả về JWT token
+ */
+router.post('/google', googleLogin);
 
 /**
  * @swagger
