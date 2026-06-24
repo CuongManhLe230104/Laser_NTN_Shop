@@ -271,7 +271,8 @@ h4, h5, h6 {
   font-family: var(--font-body);
   font-size: 1.05rem;
   color: var(--text-secondary);
-  margin-bottom: 3rem;
+  margin: 0 auto 3rem;
+  text-align: center;
   line-height: 1.75;
   font-weight: 400;
   max-width: 540px;
