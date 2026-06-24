@@ -9,13 +9,15 @@
   /* Kem sáng trên nền tối */
   border-top: 3px solid var(--primary);
   margin-top: 0;
+  padding-top: 50px;
 }
 
 .footer__inner {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 48px;
-  padding: 72px 0 56px;
+  padding-bottom: 56px;
+  margin-top: 20px;
 }
 
 /* Logo */
@@ -144,14 +146,19 @@
 }
 
 @media (max-width: 768px) {
+  .footer {
+    padding-top: 48px;
+  }
+
   .footer__inner {
     grid-template-columns: 1fr 1fr;
     gap: 32px;
-    padding: 48px 0 32px;
+    padding-bottom: 32px;
   }
 
   .footer__brand {
     grid-column: 1 / -1;
+    margin-top: 0;
   }
 
   .footer__bottom .container {
