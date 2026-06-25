@@ -25,11 +25,20 @@ export default function ProductDetail() {
   const [activeImage, setActiveImage] = useState('');
   const [imagesList, setImagesList] = useState([]);
 
-  // Form State
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
   const [addedSuccess, setAddedSuccess] = useState(false);
   const [cartError, setCartError] = useState('');
+
+  // Reviews State
+  const [reviews, setReviews] = useState([]);
+  const [avgRating, setAvgRating] = useState(0);
+  const [totalReviewsCount, setTotalReviewsCount] = useState(0);
+  const [submitRating, setSubmitRating] = useState(5);
+  const [submitComment, setSubmitComment] = useState('');
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState('');
+  const [submitError, setSubmitError] = useState('');
 
   const shopPhone = '0986814523';
 
@@ -79,6 +88,62 @@ export default function ProductDetail() {
 
     fetchProductDetail();
   }, [slug]);
+
+  // Load reviews and stats
+  const fetchReviews = async () => {
+    if (!product?.id) return;
+    try {
+      const res = await productAPI.getReviews(product.id);
+      if (res.data.success) {
+        setReviews(res.data.data.reviews || []);
+        setAvgRating(res.data.data.average_rating || 0);
+        setTotalReviewsCount(res.data.data.total_reviews || 0);
+      }
+    } catch (err) {
+      console.error('Lỗi tải đánh giá sản phẩm:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (product?.id) {
+      fetchReviews();
+    }
+  }, [product?.id]);
+
+  const token = localStorage.getItem('token');
+
+  // Submit new review
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    setSubmitLoading(true);
+    setSubmitError('');
+    setSubmitSuccess('');
+
+    try {
+      const res = await productAPI.createReview(product.id, {
+        rating: submitRating,
+        comment: submitComment,
+      });
+      if (res.data.success) {
+        setSubmitSuccess(res.data.message);
+        setSubmitComment('');
+        setSubmitRating(5);
+        fetchReviews();
+        // Xóa thông báo thành công sau 4 giây
+        setTimeout(() => setSubmitSuccess(''), 4000);
+      }
+    } catch (err) {
+      setSubmitError(err.response?.data?.message || 'Gửi đánh giá thất bại.');
+      setTimeout(() => setSubmitError(''), 4000);
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
 
   // Tự động chuyển đổi hình ảnh (slideshow) sau mỗi 3.5 giây
   useEffect(() => {
@@ -242,10 +307,17 @@ export default function ProductDetail() {
           <div className="product-detail-rating">
             <div className="stars-list">
               {[1, 2, 3, 4, 5].map((s) => (
-                <FiStar key={s} size={15} fill={s <= 4 ? '#B5722A' : 'none'} color="#B5722A" />
+                <FiStar 
+                  key={s} 
+                  size={15} 
+                  fill={s <= Math.round(avgRating) ? '#B5722A' : 'none'} 
+                  color="#B5722A" 
+                />
               ))}
             </div>
-            <span className="rating-text">(4.8 / 5.0 từ 45 đánh giá)</span>
+            <span className="rating-text">
+              ({avgRating > 0 ? `${avgRating} / 5.0` : 'Chưa có đánh giá'} từ {totalReviewsCount} đánh giá)
+            </span>
           </div>
 
           {/* Price */}
@@ -361,6 +433,111 @@ export default function ProductDetail() {
           <p>
             Vui lòng liên hệ trực tiếp với chúng tôi nếu bạn có bất kỳ yêu cầu thiết kế hoa văn riêng biệt nào khác.
           </p>
+        </div>
+      </section>
+
+      {/* Product Reviews Section */}
+      <section className="product-reviews-section glass-card">
+        <h3>Đánh giá từ khách hàng ({totalReviewsCount})</h3>
+        
+        <div className="reviews-summary-container">
+          <div className="rating-summary-left">
+            <span className="summary-number">{avgRating > 0 ? avgRating : '0'}</span>
+            <div className="summary-stars">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <FiStar key={s} size={18} fill={s <= Math.round(avgRating) ? '#B5722A' : 'none'} color="#B5722A" />
+              ))}
+            </div>
+            <span className="summary-text">Điểm đánh giá trung bình</span>
+          </div>
+
+          <div className="review-form-right">
+            <h4>{token ? 'Chia sẻ đánh giá của bạn' : 'Đăng nhập để gửi đánh giá'}</h4>
+            {token ? (
+              <form onSubmit={handleSubmitReview} className="detail-review-form">
+                <div className="form-stars-select">
+                  <span className="select-stars-label">Chọn số sao: </span>
+                  <div className="select-stars-list">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <button
+                        type="button"
+                        key={s}
+                        onClick={() => setSubmitRating(s)}
+                        className="star-select-btn"
+                        title={`${s} sao`}
+                      >
+                        <FiStar size={20} fill={s <= submitRating ? '#B5722A' : 'none'} color="#B5722A" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-comment-textarea-wrap">
+                  <textarea
+                    rows="3"
+                    placeholder="Bình luận đánh giá của bạn về sản phẩm gỗ này (ví dụ: độ hoàn thiện, màu sắc, cách đóng gói...)"
+                    value={submitComment}
+                    onChange={(e) => setSubmitComment(e.target.value)}
+                    required
+                  />
+                </div>
+
+                {submitError && <div className="review-submit-error">{submitError}</div>}
+                {submitSuccess && <div className="review-submit-success">{submitSuccess}</div>}
+
+                <button type="submit" disabled={submitLoading} className="btn-submit-review">
+                  {submitLoading ? 'Đang gửi...' : 'Gửi Đánh Giá'}
+                </button>
+              </form>
+            ) : (
+              <div className="login-to-review-notice">
+                Bạn cần <Link to="/login">đăng nhập tài khoản</Link> để viết bình luận đánh giá cho sản phẩm này.
+              </div>
+            )}
+          </div>
+        </div>
+
+        <hr className="reviews-divider" />
+
+        {/* Reviews List */}
+        <div className="reviews-list-container">
+          {reviews.length === 0 ? (
+            <div className="reviews-list-empty">
+              <span className="empty-reviews-icon">💬</span>
+              <p>Chưa có đánh giá nào cho sản phẩm này. Hãy là người đầu tiên đánh giá!</p>
+            </div>
+          ) : (
+            <div className="reviews-feed">
+              {reviews.map((rev) => {
+                const revTime = new Date(rev.created_at).toLocaleDateString('vi-VN');
+                return (
+                  <div key={rev.id} className="review-item-card">
+                    <div className="review-item-header">
+                      <div className="reviewer-info">
+                        <div className="reviewer-avatar">
+                          {rev.user_avatar ? (
+                            <img src={rev.user_avatar} alt={rev.user_name} />
+                          ) : (
+                            <span>{rev.user_name[0].toUpperCase()}</span>
+                          )}
+                        </div>
+                        <div>
+                          <h5 className="reviewer-name">{rev.user_name}</h5>
+                          <span className="review-date">{revTime}</span>
+                        </div>
+                      </div>
+                      <div className="reviewer-stars">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <FiStar key={s} size={14} fill={s <= rev.rating ? '#B5722A' : 'none'} color="#B5722A" />
+                        ))}
+                      </div>
+                    </div>
+                    {rev.comment && <p className="review-item-comment">{rev.comment}</p>}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

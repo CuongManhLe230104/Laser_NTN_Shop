@@ -182,6 +182,8 @@ Laser_NTN_Shop/
 | POST | `/api/products` | Tạo sản phẩm mới | Admin |
 | PUT | `/api/products/:id` | Cập nhật sản phẩm | Admin |
 | DELETE | `/api/products/:id` | Xóa sản phẩm | Admin |
+| GET | `/api/products/:id/reviews` | Lấy danh sách đánh giá của sản phẩm | — |
+| POST | `/api/products/:id/reviews` | Gửi đánh giá mới (giới hạn 1 lần/user) | JWT |
 
 ### Cart — `/api/cart`
 | Method | Endpoint | Mô tả | Auth |
@@ -210,6 +212,7 @@ Laser_NTN_Shop/
 | DELETE | `/api/admin/users/:id` | Xóa user | Admin |
 | POST | `/api/admin/upload` | Upload 1 ảnh sản phẩm | Admin |
 | POST | `/api/admin/upload-multiple` | Upload nhiều ảnh | Admin |
+| GET | `/api/admin/reviews/ai-analysis` | Chạy AI phân tích xu hướng phản hồi | Admin |
 
 ### Chat — `/api/chat`
 | Method | Endpoint | Mô tả | Auth |
@@ -227,6 +230,7 @@ Laser_NTN_Shop/
 - ✅ **Đăng nhập bằng Google OAuth 2.0**
 - ✅ Xem danh sách sản phẩm — tìm kiếm, lọc danh mục, phân trang
 - ✅ Trang chi tiết sản phẩm với **slideshow ảnh tự động**
+- ✅ **Hệ thống đánh giá sản phẩm**: Xem điểm trung bình sao, số lượng đánh giá và gửi đánh giá (1-5⭐ kèm bình luận) trực tiếp trên trang chi tiết sản phẩm (Giới hạn 1 đánh giá/người dùng/sản phẩm)
 - ✅ Giỏ hàng (thêm, sửa số lượng, xóa)
 - ✅ Checkout & đặt hàng
 - ✅ Xem lịch sử đơn hàng
@@ -242,6 +246,8 @@ Laser_NTN_Shop/
 - ✅ Quản lý người dùng: xem, thay đổi role, xóa
 - ✅ Báo cáo doanh thu theo thời gian
 - ✅ Chat hỗ trợ real-time với khách hàng
+- ✅ **AI Phân tích phản hồi khách hàng**: Nút phân tích AI ở trang Thống kê giúp đọc toàn bộ đánh giá của khách hàng, tạo báo cáo phân tích tự động (tổng quan hài lòng, điểm mạnh, điểm yếu cần cải tiến, đề xuất và dự báo xu hướng sản phẩm yêu thích) dạng Markdown
+- ✅ **Tự động trả lời Chat bằng AI (NTN Laser Bot)**: Bot tự động trả lời tư vấn khách hàng dựa trên lịch sử chat và danh sách sản phẩm thực tế trong cửa hàng khi admin offline
 
 ### 🎨 Giao diện
 - ✅ **Wood Theme** — bảng màu nâu gỗ sang trọng
@@ -294,7 +300,7 @@ docker logs laser_ntn_backend --tail 20
 
 | Role  | Email                | Password   |
 |-------|----------------------|------------|
-| Admin | admin@laserntn.vn    | `password` |
+| Admin | admin@laserntn.vn    | `Admin@123` |
 
 ---
 
@@ -319,6 +325,7 @@ docker logs laser_ntn_backend --tail 20
 | `users` | Người dùng (id, name, email, password, google_id, avatar, role) |
 | `categories` | Danh mục sản phẩm |
 | `products` | Sản phẩm (id, name, slug, price, image, extra_images, ...) |
+| `product_reviews` | Đánh giá sản phẩm (id, product_id, user_id, rating, comment, created_at) |
 | `cart_items` | Giỏ hàng |
 | `orders` | Đơn hàng |
 | `order_items` | Chi tiết đơn hàng |
@@ -353,6 +360,9 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 # Frontend Configuration
 VITE_API_URL=http://localhost:5000
 VITE_GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+
+# Gemini AI / OpenRouter Configuration
+GEMINI_API_KEY=your_gemini_api_key_or_openrouter_key
 ```
 
 ---

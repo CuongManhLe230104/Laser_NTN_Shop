@@ -99,6 +99,8 @@ export default function AdminChat() {
         setInputText('');
         // Cập nhật lại danh sách hội thoại để cập nhật last message
         fetchConversations();
+        // Tự động tắt bot cục bộ vì backend đã tắt bot khi Admin chat
+        setActiveConversation(prev => prev ? { ...prev, is_bot_active: 0 } : null);
       }
     } catch (error) {
       console.error('Lỗi gửi tin nhắn admin:', error);
@@ -128,6 +130,24 @@ export default function AdminChat() {
       }
     } catch (error) {
       console.error('Lỗi đóng hội thoại:', error);
+    }
+  };
+
+  // Bật/tắt trạng thái AI Bot
+  const handleToggleBot = async () => {
+    if (!activeId || !activeConversation) return;
+    const nextState = activeConversation.is_bot_active ? 0 : 1;
+
+    try {
+      const response = await chatAPI.toggleBotAdmin(activeId, nextState === 1);
+      if (response.data.success) {
+        setActiveConversation(prev => prev ? { ...prev, is_bot_active: nextState } : null);
+        setConversations(prev => prev.map(c => 
+          c.id === activeId ? { ...c, is_bot_active: nextState } : c
+        ));
+      }
+    } catch (error) {
+      console.error('Lỗi bật/tắt AI chatbot:', error);
     }
   };
 
@@ -223,7 +243,36 @@ export default function AdminChat() {
                   </div>
                 </div>
 
-                <div className="chat-actions">
+                <div className="chat-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  {activeConversation.status === 'open' && (
+                    <label className="ai-bot-toggle-label" style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px', 
+                      cursor: 'pointer', 
+                      userSelect: 'none', 
+                      background: 'rgba(255, 255, 255, 0.08)', 
+                      padding: '6px 12px', 
+                      borderRadius: '20px', 
+                      border: '1px solid rgba(255, 255, 255, 0.15)', 
+                      fontSize: '0.85rem' 
+                    }}>
+                      <input 
+                        type="checkbox" 
+                        checked={activeConversation.is_bot_active === 1 || activeConversation.is_bot_active === true} 
+                        onChange={handleToggleBot}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ 
+                        color: (activeConversation.is_bot_active === 1 || activeConversation.is_bot_active === true) ? '#4ade80' : '#94a3b8', 
+                        fontWeight: 'bold',
+                        letterSpacing: '0.5px'
+                      }}>
+                        🤖 AI Bot: {(activeConversation.is_bot_active === 1 || activeConversation.is_bot_active === true) ? 'BẬT' : 'TẮT'}
+                      </span>
+                    </label>
+                  )}
+
                   {activeConversation.status === 'open' ? (
                     <button 
                       onClick={handleCloseConversation} 
