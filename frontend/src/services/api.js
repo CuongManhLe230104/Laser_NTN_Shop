@@ -54,6 +54,8 @@ export const productAPI = {
   create: (data) => api.post('/products', data),
   update: (id, data) => api.put(`/products/${id}`, data),
   delete: (id) => api.delete(`/products/${id}`),
+  getReviews: (productId) => api.get(`/products/${productId}/reviews`),
+  createReview: (productId, data) => api.post(`/products/${productId}/reviews`, data),
 }
 
 // ---- Categories API ----
@@ -102,6 +104,8 @@ export const adminAPI = {
   uploadMultiple: (formData) => api.post('/admin/upload-multiple', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
+  // AI Reviews Analysis
+  getReviewsAIAnalysis: () => api.get('/admin/reviews/ai-analysis'),
 }
 
 // ---- Chat API ----
@@ -115,6 +119,7 @@ export const chatAPI = {
   getMessagesAdmin: (id) => api.get(`/chat/admin/conversations/${id}/messages`),
   sendMessageAdmin: (id, content) => api.post(`/chat/admin/conversations/${id}/messages`, { content }),
   closeConversationAdmin: (id) => api.put(`/chat/admin/conversations/${id}/close`),
+  toggleBotAdmin: (id, isBotActive) => api.put(`/chat/admin/conversations/${id}/toggle-bot`, { isBotActive }),
 }
 
 export default api;

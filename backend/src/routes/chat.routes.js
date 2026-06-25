@@ -7,6 +7,7 @@ const {
   getMessagesAdmin,
   sendMessageAdmin,
   closeConversationAdmin,
+  toggleBotAdmin,
 } = require('../controllers/chat.controller');
 const { verifyToken, requireAdmin } = require('../middleware/auth.middleware');
 
@@ -25,5 +26,7 @@ router.get('/admin/conversations/:id/messages', verifyToken, requireAdmin, getMe
 router.post('/admin/conversations/:id/messages', verifyToken, requireAdmin, sendMessageAdmin);
 // Admin đóng cuộc hội thoại
 router.put('/admin/conversations/:id/close', verifyToken, requireAdmin, closeConversationAdmin);
+// Admin bật/tắt chatbot AI
+router.put('/admin/conversations/:id/toggle-bot', verifyToken, requireAdmin, toggleBotAdmin);
 
 module.exports = router;

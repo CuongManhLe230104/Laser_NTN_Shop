@@ -61,6 +61,7 @@ const sendMessageUser = async (req, res) => {
     );
 
     let conversationId;
+    let isBotActive = true;
 
     if (conversations.length === 0) {
       // Nếu không có, tạo cuộc hội thoại mới
@@ -71,6 +72,7 @@ const sendMessageUser = async (req, res) => {
       conversationId = result.insertId;
     } else {
       conversationId = conversations[0].id;
+      isBotActive = conversations[0].is_bot_active;
     }
 
     // 2. Thêm tin nhắn mới
@@ -98,6 +100,31 @@ const sendMessageUser = async (req, res) => {
       success: true,
       data: newMessage,
     });
+
+    // 3. Kích hoạt phản hồi AI trong nền (background) nếu bot đang bật
+    if (isBotActive) {
+      const { generateBotResponse } = require('../services/gemini.service');
+      generateBotResponse(conversationId)
+        .then(async (botReply) => {
+          if (botReply) {
+            const [admins] = await pool.execute(`SELECT id FROM users WHERE role = 'admin' LIMIT 1`);
+            const adminId = admins[0]?.id || 1;
+
+            await pool.execute(
+              `INSERT INTO chat_messages (conversation_id, sender_id, sender_role, content) VALUES (?, ?, 'admin', ?)`,
+              [conversationId, adminId, botReply]
+            );
+
+            await pool.execute(
+              `UPDATE chat_conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+              [conversationId]
+            );
+          }
+        })
+        .catch(err => {
+          console.error('Lỗi tự động sinh câu trả lời từ chatbot AI:', err);
+        });
+    }
   } catch (error) {
     console.error('sendMessageUser error:', error);
     res.status(500).json({ success: false, message: 'Lỗi gửi tin nhắn.' });
@@ -115,6 +142,7 @@ const getConversationsAdmin = async (req, res) => {
         c.id, 
         c.user_id, 
         c.status, 
+        c.is_bot_active,
         c.created_at, 
         c.updated_at,
         u.name AS user_name, 
@@ -216,9 +244,9 @@ const sendMessageAdmin = async (req, res) => {
       [id, adminId, content.trim()]
     );
 
-    // Cập nhật trạng thái cuộc hội thoại thành 'open' (nếu đang closed và admin nhắn tin) và cập nhật thời gian updated_at
+    // Cập nhật trạng thái cuộc hội thoại thành 'open', tự động tắt chatbot và cập nhật thời gian updated_at
     await pool.execute(
-      `UPDATE chat_conversations SET status = 'open', updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+      `UPDATE chat_conversations SET status = 'open', is_bot_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
       [id]
     );
 
@@ -273,6 +301,40 @@ const closeConversationAdmin = async (req, res) => {
   }
 };
 
+/**
+ * PUT /api/chat/admin/conversations/:id/toggle-bot
+ * Admin bật/tắt chatbot cho cuộc hội thoại
+ */
+const toggleBotAdmin = async (req, res) => {
+  const { id } = req.params;
+  const { isBotActive } = req.body;
+
+  try {
+    const [conversations] = await pool.execute(
+      `SELECT * FROM chat_conversations WHERE id = ?`,
+      [id]
+    );
+
+    if (conversations.length === 0) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy cuộc hội thoại.' });
+    }
+
+    await pool.execute(
+      `UPDATE chat_conversations SET is_bot_active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+      [isBotActive ? 1 : 0, id]
+    );
+
+    res.json({
+      success: true,
+      message: `Đã ${isBotActive ? 'bật' : 'tắt'} chatbot AI thành công cho cuộc hội thoại này.`,
+      is_bot_active: isBotActive,
+    });
+  } catch (error) {
+    console.error('toggleBotAdmin error:', error);
+    res.status(500).json({ success: false, message: 'Lỗi bật/tắt chatbot.' });
+  }
+};
+
 module.exports = {
   getMessagesUser,
   sendMessageUser,
@@ -280,4 +342,5 @@ module.exports = {
   getMessagesAdmin,
   sendMessageAdmin,
   closeConversationAdmin,
+  toggleBotAdmin,
 };

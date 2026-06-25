@@ -80,6 +80,99 @@ function DonutChart({ segments, size = 140 }) {
 export default function AdminAnalytics() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [aiReport, setAiReport] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState('')
+
+  const handleRunAIAnalysis = async () => {
+    setAiLoading(true)
+    setAiError('')
+    try {
+      const res = await adminAPI.getReviewsAIAnalysis()
+      if (res.data && res.data.success) {
+        setAiReport(res.data.data)
+      } else {
+        setAiError(res.data?.message || 'Không thể tạo báo cáo phân tích AI.')
+      }
+    } catch (err) {
+      console.error('Error running AI review analysis:', err)
+      setAiError(err.response?.data?.message || 'Lỗi hệ thống khi gọi phân tích AI. Vui lòng kiểm tra lại cấu hình API key.')
+    } finally {
+      setAiLoading(false)
+    }
+  }
+
+  // Custom Markdown parser inside the component
+  const renderMarkdown = (text) => {
+    if (!text) return null
+    const lines = text.split('\n')
+    const listItems = []
+    const renderedElements = []
+
+    const flushList = (key) => {
+      if (listItems.length > 0) {
+        renderedElements.push(
+          <ul key={`list-${key}`} style={{ margin: '12px 0 12px 24px', paddingLeft: 0, listStyleType: 'disc' }}>
+            {listItems.map((item, idx) => (
+              <li key={idx} style={{ color: '#4A3520', marginBottom: '6px', lineHeight: '1.6' }} dangerouslySetInnerHTML={{ __html: item }} />
+            ))}
+          </ul>
+        )
+        listItems.length = 0
+      }
+    }
+
+    lines.forEach((line, index) => {
+      const trimmed = line.trim()
+      if (!trimmed) {
+        flushList(index)
+        renderedElements.push(<div key={`space-${index}`} style={{ height: '8px' }} />)
+        return
+      }
+
+      // Process bold text and escapes
+      let parsedLine = trimmed
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #1A0F00; font-weight: 700;">$1</strong>')
+
+      // Headers
+      if (trimmed.startsWith('### ')) {
+        flushList(index)
+        renderedElements.push(
+          <h3 key={index} style={{ color: '#4A3520', marginTop: '18px', marginBottom: '8px', fontSize: '1.05rem', borderBottom: '1px dashed rgba(181,114,42,0.2)', paddingBottom: '4px', fontWeight: '700' }}>
+            {trimmed.replace('### ', '')}
+          </h3>
+        )
+      } else if (trimmed.startsWith('## ')) {
+        flushList(index)
+        renderedElements.push(
+          <h2 key={index} style={{ color: '#4A3520', marginTop: '24px', marginBottom: '12px', fontSize: '1.2rem', borderBottom: '1px solid rgba(181,114,42,0.3)', paddingBottom: '6px', fontWeight: '700' }}>
+            {trimmed.replace('## ', '')}
+          </h2>
+        )
+      } else if (trimmed.startsWith('# ')) {
+        flushList(index)
+        renderedElements.push(
+          <h1 key={index} style={{ color: '#4A3520', marginTop: '28px', marginBottom: '16px', fontSize: '1.4rem', fontWeight: '800' }}>
+            {trimmed.replace('# ', '')}
+          </h1>
+        )
+      } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        const itemText = parsedLine.substring(2)
+        listItems.push(itemText)
+      } else {
+        flushList(index)
+        renderedElements.push(
+          <p key={index} style={{ color: '#4A3520', lineHeight: '1.6', margin: '8px 0' }} dangerouslySetInnerHTML={{ __html: parsedLine }} />
+        )
+      }
+    })
+
+    flushList('final')
+    return renderedElements
+  }
 
   useEffect(() => {
     const fetchStats = (background = false) => {
@@ -246,6 +339,97 @@ export default function AdminAnalytics() {
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+
+      {/* AI Analysis Row */}
+      <div className="admin-card" style={{ marginTop: 24 }}>
+        <div className="admin-card__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <span className="admin-card__title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>🤖</span> AI Phân Tích Ý Kiến & Nhu Cầu Khách Hàng
+          </span>
+          <button 
+            className="admin-btn admin-btn--primary" 
+            onClick={handleRunAIAnalysis}
+            disabled={aiLoading}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 8,
+              padding: '10px 20px',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              background: '#B5722A',
+              color: '#FFF',
+              border: 'none',
+              cursor: aiLoading ? 'not-allowed' : 'pointer',
+              opacity: aiLoading ? 0.7 : 1,
+              transition: 'all 0.2s',
+              boxShadow: '0 2px 8px rgba(181, 114, 42, 0.2)'
+            }}
+          >
+            {aiLoading ? (
+              <>
+                <span className="admin-spinner" style={{
+                  width: 14,
+                  height: 14,
+                  border: '2px solid rgba(255,255,255,0.3)',
+                  borderTop: '2px solid #fff',
+                  borderRadius: '50%',
+                  display: 'inline-block',
+                  animation: 'admin-spin 1s linear infinite'
+                }} />
+                Đang phân tích dữ liệu...
+              </>
+            ) : 'Chạy Phân Tích AI'}
+          </button>
+        </div>
+        <div className="admin-card__body" style={{ minHeight: 180, padding: '22px' }}>
+          {aiError && (
+            <div style={{ 
+              color: '#C0392B', 
+              background: 'rgba(192, 57, 43, 0.08)', 
+              padding: '14px 18px', 
+              borderRadius: 8, 
+              marginBottom: 18, 
+              fontSize: '0.85rem',
+              border: '1px solid rgba(192, 57, 43, 0.2)',
+              fontWeight: 500
+            }}>
+              {aiError}
+            </div>
+          )}
+          
+          {aiReport ? (
+            <div className="ai-report-content" style={{ 
+              background: '#FAF7F2', 
+              border: '1px solid rgba(181, 114, 42, 0.15)', 
+              borderRadius: 10, 
+              padding: '24px', 
+              fontSize: '0.9rem',
+              color: '#4A3520',
+              boxShadow: 'inset 0 1px 4px rgba(90, 50, 10, 0.03)'
+            }}>
+              {renderMarkdown(aiReport)}
+            </div>
+          ) : (
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              padding: '50px 20px', 
+              color: '#9E8060',
+              textAlign: 'center'
+            }}>
+              <span style={{ fontSize: '3rem', marginBottom: 16 }}>📈</span>
+              <h3 style={{ fontSize: '1.05rem', color: '#4A3520', margin: '0 0 8px 0', fontWeight: 700 }}>Chưa có báo cáo phân tích</h3>
+              <p style={{ margin: 0, fontSize: '0.85rem', maxWidth: 480, lineHeight: 1.5 }}>
+                Nhấn nút <strong>"Chạy Phân Tích AI"</strong> để kích hoạt trợ lý AI tổng hợp toàn bộ đánh giá của khách hàng, tính toán điểm hài lòng trung bình, dự báo xu hướng nhu cầu mua sắm và đề xuất cải tiến cho cửa hàng của bạn.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ const {
   uploadMultipleImages,
 } = require('../controllers/admin.controller');
 const { getAllOrdersAdmin, updateOrderStatus } = require('../controllers/order.controller');
+const { getReviewsAIAnalysis } = require('../controllers/review.controller');
 const { verifyToken, requireAdmin } = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload.middleware');
 
@@ -23,6 +24,9 @@ router.use((req, res, next) => {
 
 // Dashboard stats
 router.get('/stats', getDashboardStats);
+
+// AI Reviews Analysis
+router.get('/reviews/ai-analysis', getReviewsAIAnalysis);
 
 // Products (admin view — all products including inactive)
 router.get('/products', getAllProductsAdmin);

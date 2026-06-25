@@ -8,6 +8,7 @@ const {
   updateProduct,
   deleteProduct,
 } = require('../controllers/product.controller');
+const { getProductReviews, createReview } = require('../controllers/review.controller');
 const { verifyToken, requireAdmin } = require('../middleware/auth.middleware');
 
 /**
@@ -217,5 +218,11 @@ router.put('/:id', verifyToken, requireAdmin, updateProduct);
  *         description: Không có quyền admin
  */
 router.delete('/:id', verifyToken, requireAdmin, deleteProduct);
+
+// --- REVIEWS ROUTES ---
+// Lấy danh sách đánh giá của sản phẩm (công khai)
+router.get('/:id/reviews', getProductReviews);
+// Gửi đánh giá mới cho sản phẩm (yêu cầu đăng nhập)
+router.post('/:id/reviews', verifyToken, createReview);
 
 module.exports = router;

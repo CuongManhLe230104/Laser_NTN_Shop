@@ -24,6 +24,7 @@ const initChatTables = async () => {
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         status ENUM('open', 'closed') DEFAULT 'open',
+        is_bot_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -45,6 +46,16 @@ const initChatTables = async () => {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
     console.log('✅ Chat tables verified/created successfully!');
+
+    // Thêm cột is_bot_active vào bảng chat_conversations (bỏ qua nếu đã tồn tại)
+    try {
+      await pool.query(`ALTER TABLE chat_conversations ADD COLUMN is_bot_active BOOLEAN DEFAULT TRUE`);
+      console.log('✅ Added is_bot_active column to chat_conversations table.');
+    } catch (alterError) {
+      if (alterError.errno !== 1060) {
+        console.error('⚠️ Lỗi thêm cột is_bot_active vào chat_conversations:', alterError);
+      }
+    }
 
     // Thêm cột extra_images vào bảng products (bỏ qua nếu đã tồn tại)
     try {
@@ -90,6 +101,30 @@ const initChatTables = async () => {
 };
 
 /**
+ * Initialize Product Reviews Table if it does not exist
+ */
+const initReviewTables = async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS product_reviews (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        product_id INT NOT NULL,
+        user_id INT NOT NULL,
+        rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+        comment TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_user_product_review (user_id, product_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    console.log('✅ Product reviews table verified/created successfully!');
+  } catch (err) {
+    console.error('❌ Failed to initialize product reviews table:', err);
+  }
+};
+
+/**
  * Test DB connection with retry logic
  * (needed because MySQL container may not be ready immediately)
  */
@@ -100,8 +135,9 @@ const connectWithRetry = async (retries = 10, delay = 3000) => {
       console.log('✅ MySQL connected successfully!');
       connection.release();
       
-      // Khởi tạo các bảng chat
+      // Khởi tạo các bảng chat & reviews
       await initChatTables();
+      await initReviewTables();
       return;
     } catch (error) {
       console.log(`⏳ DB connection attempt ${i}/${retries} failed: ${error.message}`);
