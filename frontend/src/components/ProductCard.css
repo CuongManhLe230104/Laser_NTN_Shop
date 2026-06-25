@@ -81,7 +81,7 @@
 }
 
 .product-card__name {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -118,7 +118,7 @@
 }
 
 .product-card__price {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 1.1rem;
   font-weight: 800;
   background: var(--gradient-warm);

@@ -46,10 +46,23 @@ export default function AdminDashboard() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    adminAPI.getStats()
-      .then(res => setData(res.data.data))
-      .catch(err => setError(err.response?.data?.message || 'Không thể tải dữ liệu thống kê.'))
-      .finally(() => setLoading(false))
+    const fetchStats = (background = false) => {
+      if (!background) setLoading(true)
+      adminAPI.getStats()
+        .then(res => setData(res.data.data))
+        .catch(err => {
+          console.error(err)
+          setError(err.response?.data?.message || 'Không thể tải dữ liệu thống kê.')
+        })
+        .finally(() => {
+          if (!background) setLoading(false)
+        })
+    }
+
+    fetchStats(false)
+    const interval = setInterval(() => fetchStats(true), 10000) // Poll every 10 seconds
+
+    return () => clearInterval(interval)
   }, [])
 
   const s = data?.stats || {}

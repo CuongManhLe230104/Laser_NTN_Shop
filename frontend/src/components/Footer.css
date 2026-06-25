@@ -44,7 +44,7 @@
 }
 
 .footer__logo-text span {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 1.2rem;
   font-weight: 800;
   color: #FFFFFF;
@@ -93,7 +93,7 @@
 
 /* Columns */
 .footer__col h4 {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 0.82rem;
   font-weight: 800;
   text-transform: uppercase;

@@ -90,7 +90,7 @@
 }
 
 .checkout-card__title {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 800;
   color: var(--text-primary);
@@ -253,7 +253,7 @@
 
 .checkout-item__price {
   font-weight: 800;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   color: var(--primary);
   white-space: nowrap;
 }
@@ -293,7 +293,7 @@
 }
 
 .checkout-summary h3 {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 800;
   margin: 0 0 16px;
@@ -338,7 +338,7 @@
   justify-content: space-between;
   font-size: 1.05rem;
   font-weight: 800;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   color: var(--text-primary);
   margin-top: 4px;
 }
@@ -362,7 +362,7 @@
 }
 
 .checkout-success__title {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 1.8rem;
   font-weight: 800;
   color: var(--text-primary);

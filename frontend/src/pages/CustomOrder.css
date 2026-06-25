@@ -4,7 +4,7 @@
   color: #2c2c2c;
   min-height: 100vh;
   padding-bottom: 80px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
 }
 
 /* Banner */

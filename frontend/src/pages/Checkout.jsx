@@ -96,7 +96,7 @@ export default function Checkout() {
     <div className="checkout-page">
       <div className="container" style={{ textAlign: 'center', padding: '80px 20px' }}>
         <FiShoppingBag size={64} color="var(--text-muted)" style={{ marginBottom: 20 }} />
-        <h2 style={{ fontFamily: 'Outfit', marginBottom: 8 }}>Giỏ hàng trống</h2>
+        <h2 style={{ marginBottom: 8 }}>Giỏ hàng trống</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: 24 }}>Vui lòng thêm sản phẩm trước khi thanh toán.</p>
         <Link to="/products" className="btn-primary">Mua sắm ngay <FiArrowRight size={18} /></Link>
       </div>

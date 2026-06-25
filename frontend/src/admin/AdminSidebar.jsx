@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { adminAPI, chatAPI } from '../services/api'
 
 /* SVG Icons (inline — no lib required) */
 const Icon = {
@@ -65,9 +66,9 @@ const navItems = [
   {
     section: 'Quản lý',
     items: [
-      {label: 'Sản phẩm', icon: Icon.Products, path: '/admin/products', badge: '8'},
+      {label: 'Sản phẩm', icon: Icon.Products, path: '/admin/products', badge: null},
       {label: 'Danh mục', icon: Icon.Categories, path: '/admin/categories', badge: null},
-      {label: 'Đơn hàng', icon: Icon.Orders, path: '/admin/orders', badge: '3'},
+      {label: 'Đơn hàng', icon: Icon.Orders, path: '/admin/orders', badge: null},
       {label: 'Người dùng', icon: Icon.Users, path: '/admin/users', badge: null},
       {label: 'Tin nhắn', icon: Icon.Chat, path: '/admin/chat', badge: null},
     ],
@@ -84,6 +85,62 @@ const navItems = [
 export default function AdminSidebar({ collapsed, onToggleCollapse, mobileOpen, onCloseMobile }) {
   const navigate = useNavigate()
   const user = JSON.parse(localStorage.getItem('user') || '{}')
+
+  const [unreadChatsCount, setUnreadChatsCount] = useState(0)
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0)
+  const [outOfStockProductsCount, setOutOfStockProductsCount] = useState(0)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+
+    const fetchStats = async () => {
+      try {
+        const res = await adminAPI.getStats()
+        if (res.data && res.data.success) {
+          const s = res.data.data.stats || {}
+          const ordersByStatus = s.ordersByStatus || []
+          const pendingCount = ordersByStatus
+            .filter(o => o.status === 'pending' || o.status === 'processing')
+            .reduce((sum, o) => sum + Number(o.count), 0)
+          setPendingOrdersCount(pendingCount)
+          setOutOfStockProductsCount(Number(s.outOfStock || 0))
+        }
+      } catch (err) {
+        console.error('Lỗi lấy stats trong sidebar:', err)
+      }
+    }
+
+    const fetchConversations = async () => {
+      try {
+        const res = await chatAPI.getConversationsAdmin()
+        if (res.data && res.data.success) {
+          const conversations = res.data.data || []
+          const unread = conversations.filter(c => c.last_message_sender === 'user' && c.status === 'open').length
+          setUnreadChatsCount(unread)
+        }
+      } catch (err) {
+        console.error('Lỗi lấy conversations trong sidebar:', err)
+      }
+    }
+
+    const loadData = () => {
+      fetchStats()
+      fetchConversations()
+    }
+
+    loadData()
+    const interval = setInterval(loadData, 5000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const getBadgeValue = (label) => {
+    if (label === 'Sản phẩm') return outOfStockProductsCount
+    if (label === 'Đơn hàng') return pendingOrdersCount
+    if (label === 'Tin nhắn') return unreadChatsCount
+    return null
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -107,24 +164,27 @@ export default function AdminSidebar({ collapsed, onToggleCollapse, mobileOpen, 
         {navItems.map((section) => (
           <div key={section.section}>
             <div className="sidebar__section-label">{section.section}</div>
-            {section.items.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                end={item.path === '/admin'}
-                data-tooltip={item.label}
-                className={({ isActive }) =>
-                  `sidebar__nav-item${isActive ? ' active' : ''}`
-                }
-                onClick={onCloseMobile}
-              >
-                <span className="sidebar__nav-icon"><item.icon /></span>
-                <span className="sidebar__nav-label">{item.label}</span>
-                {item.badge && (
-                  <span className="sidebar__nav-badge">{item.badge}</span>
-                )}
-              </NavLink>
-            ))}
+            {section.items.map((item) => {
+              const badge = getBadgeValue(item.label)
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  end={item.path === '/admin'}
+                  data-tooltip={item.label}
+                  className={({ isActive }) =>
+                    `sidebar__nav-item${isActive ? ' active' : ''}`
+                  }
+                  onClick={onCloseMobile}
+                >
+                  <span className="sidebar__nav-icon"><item.icon /></span>
+                  <span className="sidebar__nav-label">{item.label}</span>
+                  {badge !== null && badge !== undefined && badge > 0 && (
+                    <span className="sidebar__nav-badge">{badge}</span>
+                  )}
+                </NavLink>
+              )
+            })}
           </div>
         ))}
       </nav>

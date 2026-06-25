@@ -52,10 +52,10 @@ export default function AdminSettings() {
               background: 'linear-gradient(135deg, #B5722A, #D4943A)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: 'white', fontSize: '1.8rem', fontWeight: 800,
-              margin: '0 auto 16px', fontFamily: 'Outfit',
+              margin: '0 auto 16px',
               boxShadow: '0 4px 16px rgba(181,114,42,0.4)',
             }}>{initials}</div>
-            <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem', color: '#1A0F00' }}>{user.name}</div>
+            <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#1A0F00' }}>{user.name}</div>
             <div style={{ fontSize: '0.82rem', color: '#9E8060', marginTop: 4 }}>{user.email}</div>
             <div style={{
               display: 'inline-block', marginTop: 10, padding: '4px 14px',

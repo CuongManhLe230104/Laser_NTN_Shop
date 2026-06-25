@@ -82,10 +82,20 @@ export default function AdminAnalytics() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    adminAPI.getStats()
-      .then(res => setData(res.data.data))
-      .catch(() => {})
-      .finally(() => setLoading(false))
+    const fetchStats = (background = false) => {
+      if (!background) setLoading(true)
+      adminAPI.getStats()
+        .then(res => setData(res.data.data))
+        .catch(() => {})
+        .finally(() => {
+          if (!background) setLoading(false)
+        })
+    }
+
+    fetchStats(false)
+    const interval = setInterval(() => fetchStats(true), 15000) // Poll every 15 seconds
+
+    return () => clearInterval(interval)
   }, [])
 
   if (loading) return (
@@ -158,8 +168,8 @@ export default function AdminAnalytics() {
             <div className="admin-stat-card__icon admin-stat-card__icon--red">₫</div>
           </div>
           <div>
-            <div className="admin-stat-card__value" style={{ fontSize: '1.5rem' }}>{formatPrice(s.inventoryValue)}</div>
-            <div className="admin-stat-card__label">Giá trị tồn kho</div>
+            <div className="admin-stat-card__value" style={{ fontSize: '1.5rem' }}>{formatPrice(s.revenue)}</div>
+            <div className="admin-stat-card__label">Tổng doanh thu</div>
           </div>
         </div>
       </div>

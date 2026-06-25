@@ -2,7 +2,7 @@
 .product-detail-page {
   padding-top: 40px;
   padding-bottom: 80px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   color: #2c2c2c;
   background: #FAF7F2;
   min-height: 100vh;

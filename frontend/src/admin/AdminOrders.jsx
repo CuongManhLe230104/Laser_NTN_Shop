@@ -43,17 +43,24 @@ export default function AdminOrders() {
     setTimeout(() => setToast(null), 3000)
   }
 
-  const load = useCallback(async (page = 1) => {
-    setLoading(true)
+  const load = useCallback(async (page = 1, background = false) => {
+    if (!background) setLoading(true)
     try {
       const res = await adminAPI.getOrders({ page, limit: 15, status: statusFilter || undefined })
       setOrders(res.data.data)
       setPagination(res.data.pagination)
     } catch { /* interceptor handles */ }
-    finally { setLoading(false) }
+    finally { if (!background) setLoading(false) }
   }, [statusFilter])
 
-  useEffect(() => { load(1) }, [load])
+  useEffect(() => {
+    load(1, false)
+    const interval = setInterval(() => {
+      load(pagination?.page || 1, true)
+    }, 10000) // Poll every 10 seconds
+
+    return () => clearInterval(interval)
+  }, [load, pagination?.page])
 
   const openDetail = (o) => {
     setSelected(o)
@@ -138,7 +145,7 @@ export default function AdminOrders() {
                 </td></tr>
               ) : orders.map(o => (
                 <tr key={o.id}>
-                  <td style={{ fontFamily: 'Outfit', fontWeight: 800, color: '#B5722A' }}>#{o.id}</td>
+                  <td style={{ fontWeight: 800, color: '#B5722A' }}>#{o.id}</td>
                   <td>
                     <div>
                       <div style={{ fontWeight: 700, fontSize: '0.875rem' }}>{o.user_name}</div>
@@ -148,7 +155,7 @@ export default function AdminOrders() {
                   <td style={{ fontSize: '0.8rem', color: '#9E8060', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {o.shipping_address?.address ? `${o.shipping_address.address}, ${o.shipping_address.city}` : '—'}
                   </td>
-                  <td style={{ fontWeight: 800, color: '#B5722A', fontFamily: 'Outfit' }}>{formatPrice(o.total_price)}</td>
+                  <td style={{ fontWeight: 800, color: '#B5722A' }}>{formatPrice(o.total_price)}</td>
                   <td><StatusBadge status={o.status} /></td>
                   <td style={{ fontSize: '0.78rem', color: '#9E8060' }}>{formatDate(o.created_at)}</td>
                   <td>
@@ -212,7 +219,7 @@ export default function AdminOrders() {
                   <div style={{ fontWeight: 700, fontSize: '0.875rem' }}>{item.name}</div>
                   <div style={{ fontSize: '0.75rem', color: '#9E8060' }}>x{item.quantity} × {formatPrice(item.unit_price)}</div>
                 </div>
-                <div style={{ fontWeight: 800, color: '#B5722A', fontFamily: 'Outfit' }}>{formatPrice(item.unit_price * item.quantity)}</div>
+                <div style={{ fontWeight: 800, color: '#B5722A' }}>{formatPrice(item.unit_price * item.quantity)}</div>
               </div>
             ))}
           </div>
