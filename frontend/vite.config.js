@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
-    strictPort: false,   // tự động dùng port khác nếu 3000 bị chiếm
+    port: 3001,
+    strictPort: true,    // luôn dùng port 3000, báo lỗi nếu bị chiếm (tránh chạy 2 host)
     proxy: {
       '/api': {
         // Khi chạy npm run dev trực tiếp → backend ở localhost:5000

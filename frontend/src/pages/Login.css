@@ -91,7 +91,7 @@
 
 /* Title */
 .login-card__title {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 1.6rem;
   font-weight: 800;
   text-align: center;
@@ -165,3 +165,35 @@
   transition: var(--transition);
 }
 .login-card__back a:hover { color: var(--primary); }
+
+/* Google Login Button */
+.login-card__google {
+  display: flex;
+  justify-content: center;
+  margin-top: -4px;
+}
+
+/* Override Google button width to fill container */
+.login-card__google > div,
+.login-card__google iframe {
+  width: 100% !important;
+}
+
+/* Divider "hoặc" */
+.login-card__divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.login-card__divider::before,
+.login-card__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-light);
+}

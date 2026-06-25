@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiArrowRight } from 'react-icons/fi'
 import { cartAPI } from '../services/api'
 import './Cart.css'
 
 export default function Cart() {
+  const navigate = useNavigate()
   const [cart, setCart] = useState({ items: [], total: 0, itemCount: 0 })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -184,7 +185,7 @@ export default function Cart() {
                 id="checkout-btn"
                 className="btn-primary"
                 style={{ width: '100%', justifyContent: 'center', padding: '14px', marginTop: '8px' }}
-                onClick={() => alert('Tính năng thanh toán đang được phát triển!')}
+                onClick={() => navigate('/checkout')}
               >
                 Tiến Hành Thanh Toán <FiArrowRight size={18} />
               </button>

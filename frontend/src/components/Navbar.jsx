@@ -40,12 +40,14 @@ export default function Navbar() {
         <ul className="navbar__links">
           <li><NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>Trang Chủ</NavLink></li>
           <li><NavLink to="/products" className={({ isActive }) => isActive ? 'active' : ''}>Sản Phẩm</NavLink></li>
+          <li><NavLink to="/custom-order" className={({ isActive }) => isActive ? 'active' : ''}>Thiết Kế Riêng</NavLink></li>
         </ul>
 
         {/* Actions */}
         <div className="navbar__actions">
           {user ? (
             <>
+              <NavLink to="/orders" className={({ isActive }) => isActive ? 'active' : ''} style={{ fontSize: '0.875rem' }}>Đơn hàng</NavLink>
               <span className="navbar__user">
                 <FiUser size={14} /> {user.name}
               </span>
@@ -78,6 +80,7 @@ export default function Navbar() {
         <div className="navbar__mobile">
           <NavLink to="/" onClick={() => setMenuOpen(false)}>Trang Chủ</NavLink>
           <NavLink to="/products" onClick={() => setMenuOpen(false)}>Sản Phẩm</NavLink>
+          <NavLink to="/custom-order" onClick={() => setMenuOpen(false)}>Thiết Kế Riêng</NavLink>
           {user ? (
             <>
               <NavLink to="/cart" onClick={() => setMenuOpen(false)}>Giỏ Hàng</NavLink>

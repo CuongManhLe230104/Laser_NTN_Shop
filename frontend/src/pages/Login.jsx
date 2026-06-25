@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi'
+import { GoogleLogin } from '@react-oauth/google'
 import { authAPI } from '../services/api'
 import './Login.css'
 
@@ -33,12 +34,32 @@ export default function Login() {
       const { token, user } = res.data
       localStorage.setItem('token', token)
       localStorage.setItem('user', JSON.stringify(user))
-      navigate('/')
+      navigate(user.role === 'admin' ? '/admin' : '/')
     } catch (err) {
       setError(err.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await authAPI.googleLogin(credentialResponse.credential)
+      const { token, user } = res.data
+      localStorage.setItem('token', token)
+      localStorage.setItem('user', JSON.stringify(user))
+      navigate(user.role === 'admin' ? '/admin' : '/')
+    } catch (err) {
+      setError(err.response?.data?.message || 'Đăng nhập Google thất bại. Vui lòng thử lại.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleError = () => {
+    setError('Đăng nhập Google thất bại. Vui lòng thử lại.')
   }
 
   return (
@@ -82,6 +103,25 @@ export default function Login() {
 
         {/* Error */}
         {error && <div className="alert alert-error">{error}</div>}
+
+        {/* Google Login Button */}
+        <div className="login-card__google">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            theme="outline"
+            size="large"
+            width="100%"
+            text={mode === 'login' ? 'signin_with' : 'signup_with'}
+            shape="rectangular"
+            locale="vi"
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="login-card__divider">
+          <span>hoặc</span>
+        </div>
 
         {/* Form */}
         <form className="login-card__form" onSubmit={handleSubmit} noValidate>

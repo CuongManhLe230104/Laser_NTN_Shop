@@ -69,18 +69,16 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Hero Visual */}
+          {/* Logo Visual Column */}
           <div className="hero__visual fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="hero__card glass-card">
-              <div className="hero__laser-beam" />
-              <FiStar className="hero__icon" />
-              <p>Hộp rượu gỗ cao cấp</p>
-              <span>350.000₫</span>
+            <div className="hero__logo-container">
+              <div className="hero__logo-ring hero__logo-ring--1" />
+              <div className="hero__logo-ring hero__logo-ring--2" />
+              <img src="/logo.jpg" alt="Laser NTN Shop" className="hero__logo-image" />
             </div>
           </div>
         </div>
       </section>
-
       {/* Stats */}
       <section className="stats">
         <div className="container stats__grid">
@@ -114,23 +112,6 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* CTA Banner */}
-      <section className="cta-banner">
-        <div className="container cta-banner__inner">
-          <div>
-            <h2 className="section-title" style={{ marginBottom: '12px' }}>
-              Sẵn Sàng Bắt Đầu?
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem' }}>
-              Hàng trăm sản phẩm laser đang chờ bạn khám phá.
-            </p>
-          </div>
-          <Link to="/products" className="btn-accent" style={{ whiteSpace: 'nowrap' }}>
-            Xem Tất Cả Sản Phẩm <FiArrowRight size={18} />
-          </Link>
         </div>
       </section>
     </div>

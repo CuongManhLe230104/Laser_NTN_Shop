@@ -46,7 +46,7 @@
 /* Slide (two-column layout) */
 .product-banner__slide {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0;
   width: 100%;
   border-radius: var(--radius-xl);
@@ -54,7 +54,8 @@
   border: 1.5px solid var(--border-card);
   box-shadow: var(--shadow-hover);
   animation: slideIn 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 440px;
+  height: 460px;
+  isolation: isolate;
 }
 
 @keyframes slideIn {
@@ -68,6 +69,7 @@
   overflow: hidden;
   display: block;
   background: var(--bg-section);
+  min-width: 0;
 }
 
 .product-banner__img {
@@ -102,6 +104,7 @@
   gap: 16px;
   background: var(--bg-white);
   justify-content: center;
+  min-width: 0;
 }
 
 .product-banner__info-cat {
@@ -113,7 +116,7 @@
 }
 
 .product-banner__info-name {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 1.9rem;
   font-weight: 800;
   line-height: 1.2;
@@ -148,7 +151,7 @@
 
 .product-banner__info-price {
   display: block;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 1.6rem;
   font-weight: 800;
   background: var(--gradient-warm);
@@ -185,7 +188,7 @@
   padding-top: 8px;
 }
 .product-banner__counter span {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
   font-size: 0.78rem;
   font-weight: 800;
   color: var(--text-muted);
@@ -308,6 +311,7 @@
   .product-banner__slide {
     grid-template-columns: 1fr;
     min-height: auto;
+    height: auto;
   }
   .product-banner__img-wrap { height: 260px; }
   .product-banner__info { padding: 28px; }
