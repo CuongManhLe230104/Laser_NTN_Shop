@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { adminAPI, productAPI, categoryAPI } from '../services/api'
 import AdminModal from './AdminModal'
+import { formatPrice } from '../utils/formatPrice'
 
-const formatPrice = (v) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v || 0)
 const formatDate  = (d) => d ? new Date(d).toLocaleDateString('vi-VN') : '—'
 
 const EMPTY_FORM = {

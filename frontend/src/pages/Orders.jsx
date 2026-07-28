@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { FiShoppingBag, FiChevronDown, FiChevronUp, FiXCircle } from 'react-icons/fi'
 import { orderAPI } from '../services/api'
+import { formatPrice } from '../utils/formatPrice'
 import './Orders.css'
 
-const formatPrice = (v) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v || 0)
 const formatDate  = (d) => d ? new Date(d).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '—'
 
 const STATUS_CONFIG = {

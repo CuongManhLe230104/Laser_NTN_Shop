@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiArrowRight } from 'react-icons/fi'
 import { cartAPI } from '../services/api'
+import { formatPrice } from '../utils/formatPrice'
 import './Cart.css'
 
 export default function Cart() {
@@ -11,8 +12,6 @@ export default function Cart() {
   const [error, setError] = useState(null)
   const [updating, setUpdating] = useState(null) // item id being updated
 
-  const formatPrice = (price) =>
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)
 
   const fetchCart = async () => {
     try {
