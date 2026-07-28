@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FiShoppingCart, FiPhone, FiCheck, FiArrowLeft, FiStar, FiHeart, FiShare2 } from 'react-icons/fi';
 import { productAPI, cartAPI } from '../services/api';
 import ProductCard from '../components/ProductCard';
+import { formatPrice } from '../utils/formatPrice';
 import './ProductDetail.css';
 
 // Bản đồ hình ảnh chi tiết bổ sung cho các sản phẩm
@@ -59,7 +60,7 @@ export default function ProductDetail() {
           setActiveImage(prod.image_url);
 
           // Xây dựng danh sách ảnh (ảnh chính + ảnh chi tiết từ DB và map)
-          const dbExtraImages = prod.extra_images 
+          const dbExtraImages = prod.extra_images
             ? prod.extra_images.split(',').map(img => img.trim()).filter(img => img !== '')
             : [];
           const mapExtraImages = detailImagesMap[prod.slug] || [];
@@ -68,7 +69,7 @@ export default function ProductDetail() {
 
           // Fetch sản phẩm liên quan (cùng danh mục)
           if (prod.category_slug) {
-            const relatedRes = await productAPI.getAll({ 
+            const relatedRes = await productAPI.getAll({
               category: prod.category_slug,
               limit: 5 // Lấy 5 để sau khi lọc bỏ sản phẩm hiện tại còn 4
             });
@@ -174,7 +175,7 @@ export default function ProductDetail() {
 
   const handleAddToCart = async (e) => {
     if (e) e.preventDefault();
-    
+
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
@@ -264,9 +265,9 @@ export default function ProductDetail() {
         {/* Gallery Column */}
         <div className="product-gallery">
           <div className="main-image-wrap">
-            <img 
-              src={activeImage} 
-              alt={product.name} 
+            <img
+              src={activeImage}
+              alt={product.name}
               className="main-product-image"
               onError={(e) => { e.target.src = 'https://placehold.co/600x450/1a1a2e/6c63ff?text=No+Image' }}
             />
@@ -279,14 +280,14 @@ export default function ProductDetail() {
           {imagesList.length > 1 && (
             <div className="thumbnails-row">
               {imagesList.map((img, index) => (
-                <button 
-                  key={index} 
+                <button
+                  key={index}
                   className={`thumbnail-btn ${activeImage === img ? 'active' : ''}`}
                   onClick={() => setActiveImage(img)}
                 >
-                  <img 
-                    src={img} 
-                    alt={`Thumbnail ${index + 1}`} 
+                  <img
+                    src={img}
+                    alt={`Thumbnail ${index + 1}`}
                     onError={(e) => { e.target.src = 'https://placehold.co/100x80/1a1a2e/6c63ff?text=No+Image' }}
                   />
                 </button>
@@ -307,11 +308,11 @@ export default function ProductDetail() {
           <div className="product-detail-rating">
             <div className="stars-list">
               {[1, 2, 3, 4, 5].map((s) => (
-                <FiStar 
-                  key={s} 
-                  size={15} 
-                  fill={s <= Math.round(avgRating) ? '#B5722A' : 'none'} 
-                  color="#B5722A" 
+                <FiStar
+                  key={s}
+                  size={15}
+                  fill={s <= Math.round(avgRating) ? '#B5722A' : 'none'}
+                  color="#B5722A"
                 />
               ))}
             </div>
@@ -320,9 +321,9 @@ export default function ProductDetail() {
             </span>
           </div>
 
-          {/* Price */}
+          {/* Price*/}
           <div className="product-detail-price">
-            {product.price.toLocaleString('vi-VN')}₫
+            {formatPrice(product?.price)}
           </div>
 
           <p className="product-brief-desc">{product.description}</p>
@@ -344,11 +345,11 @@ export default function ProductDetail() {
               <span className="quantity-label">Số lượng:</span>
               <div className="quantity-selector-btn-wrap">
                 <button onClick={handleDecrement} className="quantity-dec-btn" disabled={quantity <= 1}>-</button>
-                <input 
-                  type="number" 
-                  value={quantity} 
-                  readOnly 
-                  className="quantity-input-val" 
+                <input
+                  type="number"
+                  value={quantity}
+                  readOnly
+                  className="quantity-input-val"
                 />
                 <button onClick={handleIncrement} className="quantity-inc-btn" disabled={quantity >= product.stock}>+</button>
               </div>
@@ -357,7 +358,7 @@ export default function ProductDetail() {
 
           {/* Purchase Actions */}
           <div className="purchase-actions-group">
-            <button 
+            <button
               className={`btn-add-to-cart ${addedSuccess ? 'added-success' : ''}`}
               onClick={handleAddToCart}
               disabled={addingToCart || product.stock === 0}
@@ -369,7 +370,7 @@ export default function ProductDetail() {
               )}
             </button>
 
-            <button 
+            <button
               className="btn-buy-now"
               onClick={handleBuyNow}
               disabled={addingToCart || product.stock === 0}
@@ -402,17 +403,17 @@ export default function ProductDetail() {
 
           {/* Direct Support Contact Buttons */}
           <div className="detail-support-buttons">
-            <a 
-              href={`https://zalo.me/${shopPhone}`} 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href={`https://zalo.me/${shopPhone}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="detail-support-link zalo-support"
             >
               <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo" />
               Tư vấn Zalo sỉ / lẻ
             </a>
-            <button 
-              onClick={handleOpenLiveChat} 
+            <button
+              onClick={handleOpenLiveChat}
               className="detail-support-link web-support"
             >
               💬 Chat trực tuyến ngay
@@ -439,7 +440,7 @@ export default function ProductDetail() {
       {/* Product Reviews Section */}
       <section className="product-reviews-section glass-card">
         <h3>Đánh giá từ khách hàng ({totalReviewsCount})</h3>
-        
+
         <div className="reviews-summary-container">
           <div className="rating-summary-left">
             <span className="summary-number">{avgRating > 0 ? avgRating : '0'}</span>

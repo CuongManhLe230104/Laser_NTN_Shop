@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { FiChevronLeft, FiChevronRight, FiShoppingCart, FiArrowRight } from 'react-icons/fi'
 import { productAPI, cartAPI } from '../services/api'
+import { formatPrice } from '../utils/formatPrice'
 import './ProductBanner.css'
 
 export default function ProductBanner() {
@@ -61,8 +62,6 @@ export default function ProductBanner() {
     }
   }
 
-  const formatPrice = (p) =>
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p)
 
   if (loading) {
     return (

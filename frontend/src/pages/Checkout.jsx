@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiShoppingBag } from 'react-icons/fi'
 import { cartAPI, orderAPI } from '../services/api'
+import { formatPrice } from '../utils/formatPrice'
 import './Checkout.css'
 
-const formatPrice = (v) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v || 0)
 
 const PAYMENT_METHODS = [
   { id: 'cod', label: 'Thanh toán khi nhận hàng (COD)', icon: '💵', desc: 'Trả tiền mặt khi nhận hàng' },

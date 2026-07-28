@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FiShoppingCart, FiEye, FiStar } from 'react-icons/fi'
 import { cartAPI } from '../services/api'
+import { formatPrice } from '../utils/formatPrice'
 import './ProductCard.css'
 
 export default function ProductCard({ product }) {
@@ -33,8 +34,7 @@ export default function ProductCard({ product }) {
     }
   }
 
-  const formatPrice = (price) =>
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)
+
 
   return (
     <div className="product-card">

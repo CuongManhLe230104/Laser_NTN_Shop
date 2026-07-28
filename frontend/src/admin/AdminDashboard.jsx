@@ -3,10 +3,10 @@ import { adminAPI } from '../services/api'
 
 /* ---- Helpers ---- */
 const formatPrice = (v) => {
-  if (!v && v !== 0) return '0₫'
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M₫`
-  if (v >= 1_000) return `${(v / 1_000).toFixed(0)}K₫`
-  return `${v}₫`
+  if (!v && v !== 0) return '0 VNĐ'
+  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M VNĐ`
+  if (v >= 1_000) return `${(v / 1_000).toFixed(0)}K VNĐ`
+  return `${v} VNĐ`
 }
 
 const formatDate = (dateStr) => {
