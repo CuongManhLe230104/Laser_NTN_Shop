@@ -3,17 +3,20 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FiArrowLeft, FiArrowRight, FiCheckCircle, FiShoppingBag } from 'react-icons/fi'
 import { cartAPI, orderAPI } from '../services/api'
 import { formatPrice } from '../utils/formatPrice'
-import './Checkout.css'
+import { useAuth } from '../context/AuthContext.jsx'
+import { useCart } from '../context/CartContext.jsx'
+import '../styles/pages/Checkout.css'
 
 
 const PAYMENT_METHODS = [
   { id: 'cod', label: 'Thanh toán khi nhận hàng (COD)', icon: '💵', desc: 'Trả tiền mặt khi nhận hàng' },
-  { id: 'bank', label: 'Chuyển khoản ngân hàng', icon: '🏦', desc: 'Chuyển khoản trước, shop xác nhận trong 30 phút' },
+  { id: 'bank', label: 'Chuyển khoản ngân hàng', icon: '🏦', desc: 'Vietcombank — Quét mã QR / Chuyển khoản' },
 ]
 
 export default function Checkout() {
   const navigate = useNavigate()
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  const { user } = useAuth()
+  const { fetchCart } = useCart()
 
   const [cart, setCart]         = useState({ items: [], total: 0 })
   const [cartLoading, setCartLoading] = useState(true)
@@ -24,7 +27,7 @@ export default function Checkout() {
   const [error, setError]       = useState(null)
 
   const [form, setForm] = useState({
-    full_name:  user.name || '',
+    full_name:  user?.name || '',
     phone:      '',
     address:    '',
     city:       '',
@@ -76,6 +79,7 @@ export default function Checkout() {
         payment_method: payment,
       })
       setOrderId(res.data.data.orderId)
+      await fetchCart()
       setStep(3)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {

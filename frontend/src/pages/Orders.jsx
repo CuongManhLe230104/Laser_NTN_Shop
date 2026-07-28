@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { FiShoppingBag, FiChevronDown, FiChevronUp, FiXCircle } from 'react-icons/fi'
 import { orderAPI } from '../services/api'
 import { formatPrice } from '../utils/formatPrice'
-import './Orders.css'
+import '../styles/pages/Orders.css'
 
 const formatDate  = (d) => d ? new Date(d).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '—'
 

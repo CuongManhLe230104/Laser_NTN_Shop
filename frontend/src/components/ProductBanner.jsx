@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FiChevronLeft, FiChevronRight, FiShoppingCart, FiArrowRight } from 'react-icons/fi'
-import { productAPI, cartAPI } from '../services/api'
+import { productAPI } from '../services/api'
 import { formatPrice } from '../utils/formatPrice'
-import './ProductBanner.css'
+import { useCart } from '../context/CartContext.jsx'
+import '../styles/components/ProductBanner.css'
 
 export default function ProductBanner() {
   const [products, setProducts] = useState([])
@@ -11,23 +12,42 @@ export default function ProductBanner() {
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(null)
   const [addedId, setAddedId] = useState(null)
-  const timerRef = useRef(null)
+  const { addToCart } = useCart()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    productAPI.getAll({ limit: 8, page: 1 })
-      .then(res => setProducts(res.data.data))
+    productAPI.getAll({ limit: 5 })
+      .then(res => {
+        if (res.data.success) setProducts(res.data.data)
+      })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])
 
-  // Auto-play
   const next = useCallback(() => {
-    setCurrent(c => (c + 1) % products.length)
+    setCurrent(prev => (prev + 1) % products.length)
   }, [products.length])
 
-  const prev = () => {
-    setCurrent(c => (c - 1 + products.length) % products.length)
+  const prev = useCallback(() => {
+    setCurrent(prev => (prev - 1 + products.length) % products.length)
+  }, [products.length])
+
+  const handleTouchStart = (e) => {
+    timerRef.current && clearInterval(timerRef.current)
   }
+
+  const handleTouchEnd = () => {
+    if (products.length < 2) return
+    timerRef.current = setInterval(next, 4500)
+  }
+
+  const timerRef = useRef(null)
+
+  useEffect(() => {
+    if (products.length < 2) return
+    timerRef.current = setInterval(next, 4500)
+    return () => clearInterval(timerRef.current)
+  }, [products.length, next])
 
   const goTo = (idx) => {
     setCurrent(idx)
@@ -39,27 +59,20 @@ export default function ProductBanner() {
     timerRef.current = setInterval(next, 4500)
   }, [next])
 
-  useEffect(() => {
-    if (products.length < 2) return
-    timerRef.current = setInterval(next, 4500)
-    return () => clearInterval(timerRef.current)
-  }, [products.length, next])
-
   const handleAddToCart = async (e, product) => {
     e.preventDefault()
     e.stopPropagation()
-    const token = localStorage.getItem('token')
-    if (!token) { window.location.href = '/login'; return }
-    try {
-      setAdding(product.id)
-      await cartAPI.addItem({ product_id: product.id, quantity: 1 })
+    setAdding(product.id)
+    const res = await addToCart(product.id, 1)
+    if (res.requireLogin) {
+      navigate('/login')
+      return
+    }
+    if (res.success) {
       setAddedId(product.id)
       setTimeout(() => setAddedId(null), 2000)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setAdding(null)
     }
+    setAdding(null)
   }
 
 

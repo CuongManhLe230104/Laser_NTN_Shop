@@ -1,5 +1,5 @@
 import { FiPhone, FiMail, FiMapPin, FiFacebook, FiSend, FiCheckCircle } from 'react-icons/fi';
-import './CustomOrder.css';
+import '../styles/pages/CustomOrder.css';
 
 export default function CustomOrder() {
   const shopPhone = '0986814523';

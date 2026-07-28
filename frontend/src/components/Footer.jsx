@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { FiMail, FiPhone, FiMapPin, FiFacebook, FiYoutube } from 'react-icons/fi'
-import './Footer.css'
+import '../styles/components/Footer.css'
 
 export default function Footer() {
   const currentYear = 2019

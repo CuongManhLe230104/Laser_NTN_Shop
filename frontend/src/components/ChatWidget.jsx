@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMessageSquare, FiSend, FiX, FiPhone, FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import { chatAPI } from '../services/api';
-import './ChatWidget.css';
+import { useAuth } from '../context/AuthContext.jsx';
+import '../styles/components/ChatWidget.css';
 
 // ─── Hàm parse Markdown nhẹ cho tin nhắn AI ─────────────────────────────────
 function renderBotMessage(text) {
@@ -92,9 +93,8 @@ export default function ChatWidget() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isSending, setIsSending] = useState(false);
 
-  const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const isLoggedIn = !!token && user.role !== 'admin'; // Chỉ hiện chat cho user thường, admin có Dashboard riêng
+  const { token, user, isLoggedIn: authLoggedIn } = useAuth();
+  const isLoggedIn = authLoggedIn && user?.role !== 'admin'; // Chỉ hiện chat cho user thường, admin có Dashboard riêng
 
   const messagesEndRef = useRef(null);
   const pollIntervalRef = useRef(null);

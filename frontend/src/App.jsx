@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useAuth } from './context/AuthContext.jsx'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -22,16 +23,15 @@ import AdminChat from './admin/AdminChat'
 
 // Protected route — redirect to /login if not logged in
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('token')
-  return token ? children : <Navigate to="/login" replace />
+  const { isLoggedIn } = useAuth()
+  return isLoggedIn ? children : <Navigate to="/login" replace />
 }
 
 // Admin route — must be logged in AND have admin role
 const AdminRoute = ({ children }) => {
-  const token = localStorage.getItem('token')
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
-  if (!token) return <Navigate to="/login" replace />
-  if (user.role !== 'admin') return <Navigate to="/" replace />
+  const { isLoggedIn, isAdmin } = useAuth()
+  if (!isLoggedIn) return <Navigate to="/login" replace />
+  if (!isAdmin) return <Navigate to="/" replace />
   return children
 }
 

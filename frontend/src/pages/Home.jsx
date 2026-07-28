@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { FiArrowRight, FiZap, FiShield, FiTruck, FiStar } from 'react-icons/fi'
 import ProductBanner from '../components/ProductBanner'
-import './Home.css'
+import '../styles/pages/Home.css'
 
 const features = [
   {

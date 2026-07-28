@@ -1,75 +1,37 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiArrowRight } from 'react-icons/fi'
-import { cartAPI } from '../services/api'
+import { useCart } from '../context/CartContext.jsx'
 import { formatPrice } from '../utils/formatPrice'
-import './Cart.css'
+import '../styles/pages/Cart.css'
 
 export default function Cart() {
   const navigate = useNavigate()
-  const [cart, setCart] = useState({ items: [], total: 0, itemCount: 0 })
-  const [loading, setLoading] = useState(true)
+  const { cart, loading, updateQuantity, removeFromCart, clearCart } = useCart()
   const [error, setError] = useState(null)
   const [updating, setUpdating] = useState(null) // item id being updated
-
-
-  const fetchCart = async () => {
-    try {
-      setLoading(true)
-      const res = await cartAPI.getCart()
-      setCart(res.data.data)
-    } catch (err) {
-      setError('Không thể tải giỏ hàng.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { fetchCart() }, [])
 
   const handleUpdateQty = async (item, delta) => {
     const newQty = item.quantity + delta
     if (newQty < 1) return
 
-    try {
-      setUpdating(item.id)
-      await cartAPI.updateItem(item.id, { quantity: newQty })
-      setCart((prev) => ({
-        ...prev,
-        items: prev.items.map((i) => i.id === item.id ? { ...i, quantity: newQty } : i),
-        total: prev.items.reduce((sum, i) => sum + i.price * (i.id === item.id ? newQty : i.quantity), 0),
-      }))
-    } catch (err) {
-      setError(err.response?.data?.message || 'Lỗi cập nhật.')
-    } finally {
-      setUpdating(null)
-    }
+    setUpdating(item.id)
+    const res = await updateQuantity(item.id, newQty)
+    if (!res.success) setError('Lỗi cập nhật số lượng')
+    setUpdating(null)
   }
 
   const handleRemove = async (id) => {
-    try {
-      setUpdating(id)
-      await cartAPI.removeItem(id)
-      setCart((prev) => {
-        const items = prev.items.filter((i) => i.id !== id)
-        const total = items.reduce((s, i) => s + i.price * i.quantity, 0)
-        return { items, total, itemCount: items.length }
-      })
-    } catch (err) {
-      setError('Lỗi xóa sản phẩm.')
-    } finally {
-      setUpdating(null)
-    }
+    setUpdating(id)
+    const res = await removeFromCart(id)
+    if (!res.success) setError('Lỗi xóa sản phẩm')
+    setUpdating(null)
   }
 
   const handleClear = async () => {
     if (!window.confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) return
-    try {
-      await cartAPI.clearCart()
-      setCart({ items: [], total: 0, itemCount: 0 })
-    } catch (err) {
-      setError('Lỗi xóa giỏ hàng.')
-    }
+    const res = await clearCart()
+    if (!res.success) setError('Lỗi xóa giỏ hàng')
   }
 
   if (loading) {

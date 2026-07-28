@@ -1,19 +1,16 @@
 import { useState, useEffect } from 'react'
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { FiShoppingCart, FiMenu, FiX, FiUser, FiLogOut } from 'react-icons/fi'
-import './Navbar.css'
+import { useAuth } from '../context/AuthContext.jsx'
+import { useCart } from '../context/CartContext.jsx'
+import '../styles/components/Navbar.css'
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [user, setUser] = useState(null)
+  const { user, logout } = useAuth()
+  const { cartCount } = useCart()
   const navigate = useNavigate()
-  const location = useLocation()
-
-  useEffect(() => {
-    const stored = localStorage.getItem('user')
-    setUser(stored ? JSON.parse(stored) : null)
-  }, [location])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30)
@@ -22,9 +19,7 @@ export default function Navbar() {
   }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    setUser(null)
+    logout()
     navigate('/')
   }
 
@@ -53,6 +48,7 @@ export default function Navbar() {
               </span>
               <Link to="/cart" className="navbar__cart-btn" aria-label="Giỏ hàng">
                 <FiShoppingCart size={20} />
+                {cartCount > 0 && <span className="navbar__cart-badge">{cartCount}</span>}
               </Link>
               <button className="navbar__logout" onClick={handleLogout} title="Đăng xuất">
                 <FiLogOut size={16} />
