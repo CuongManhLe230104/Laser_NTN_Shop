@@ -4,6 +4,12 @@ Website bán hàng sản phẩm quà tặng & đồ trang trí khắc laser chuy
 
 > Thiết kế theo phong cách **Wood Theme** (gỗ tự nhiên) — hiện đại, sang trọng, tối ưu UX với kiến trúc **Context API** và **AI Assistant**.
 
+## 🌐 Live Demo
+
+[![Live Demo](https://img.shields.io/badge/🚀_Xem_Giao_Diện-laser--ntn--shop.vercel.app-brightgreen?style=for-the-badge)](https://laser-ntn-shop.vercel.app/)
+
+> **👆 Click vào đây để xem giao diện trực tiếp trên Vercel**
+
 ---
 
 ## 🏗️ Kiến trúc hệ thống
