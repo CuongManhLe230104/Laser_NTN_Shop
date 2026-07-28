@@ -1,37 +1,43 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FiShoppingCart, FiEye, FiStar } from 'react-icons/fi'
-import { cartAPI } from '../services/api'
+import { useCart } from '../context/CartContext.jsx'
+import { useToast } from '../context/ToastContext.jsx'
 import { formatPrice } from '../utils/formatPrice'
-import './ProductCard.css'
+import '../styles/components/ProductCard.css'
 
 export default function ProductCard({ product }) {
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
   const [error, setError] = useState(null)
+  const { addToCart } = useCart()
+  const { toastSuccess, toastError, toastWarning } = useToast()
+  const navigate = useNavigate()
 
   const handleAddToCart = async (e) => {
     e.preventDefault()
     e.stopPropagation()
 
-    const token = localStorage.getItem('token')
-    if (!token) {
-      window.location.href = '/login'
+    setAdding(true)
+    setError(null)
+    const result = await addToCart(product.id, 1)
+
+    if (result.requireLogin) {
+      toastWarning('Vui lòng đăng nhập để mua hàng!')
+      navigate('/login')
       return
     }
 
-    try {
-      setAdding(true)
-      setError(null)
-      await cartAPI.addItem({ product_id: product.id, quantity: 1 })
+    if (result.success) {
       setAdded(true)
+      toastSuccess(`Đã thêm "${product.name}" vào giỏ hàng!`)
       setTimeout(() => setAdded(false), 2500)
-    } catch (err) {
-      setError(err.response?.data?.message || 'Lỗi thêm vào giỏ')
+    } else {
+      setError(result.message || 'Lỗi thêm vào giỏ')
+      toastError(result.message || 'Lỗi thêm sản phẩm vào giỏ')
       setTimeout(() => setError(null), 3000)
-    } finally {
-      setAdding(false)
     }
+    setAdding(false)
   }
 
 

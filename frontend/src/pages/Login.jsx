@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi'
 import { GoogleLogin } from '@react-oauth/google'
 import { authAPI } from '../services/api'
-import './Login.css'
+import { useAuth } from '../context/AuthContext.jsx'
+import '../styles/pages/Login.css'
 
 export default function Login() {
   const [mode, setMode] = useState('login') // 'login' | 'register'
@@ -11,6 +12,7 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const { login } = useAuth()
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -32,8 +34,7 @@ export default function Login() {
       }
 
       const { token, user } = res.data
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(user))
+      login(token, user)
       navigate(user.role === 'admin' ? '/admin' : '/')
     } catch (err) {
       setError(err.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.')
@@ -48,8 +49,7 @@ export default function Login() {
     try {
       const res = await authAPI.googleLogin(credentialResponse.credential)
       const { token, user } = res.data
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(user))
+      login(token, user)
       navigate(user.role === 'admin' ? '/admin' : '/')
     } catch (err) {
       setError(err.response?.data?.message || 'Đăng nhập Google thất bại. Vui lòng thử lại.')

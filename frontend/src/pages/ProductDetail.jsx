@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FiShoppingCart, FiPhone, FiCheck, FiArrowLeft, FiStar, FiHeart, FiShare2 } from 'react-icons/fi';
-import { productAPI, cartAPI } from '../services/api';
+import { productAPI } from '../services/api';
 import ProductCard from '../components/ProductCard';
 import { formatPrice } from '../utils/formatPrice';
-import './ProductDetail.css';
+import { useCart } from '../context/CartContext.jsx';
+import '../styles/pages/ProductDetail.css';
 
 // Bản đồ hình ảnh chi tiết bổ sung cho các sản phẩm
 const detailImagesMap = {
@@ -173,46 +174,43 @@ export default function ProductDetail() {
     }
   };
 
+  const { addToCart } = useCart();
+
   const handleAddToCart = async (e) => {
     if (e) e.preventDefault();
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
 
     setAddingToCart(true);
     setCartError('');
     setAddedSuccess(false);
 
-    try {
-      await cartAPI.addItem({ product_id: product.id, quantity });
-      setAddedSuccess(true);
-      setTimeout(() => setAddedSuccess(false), 3000);
-    } catch (err) {
-      setCartError(err.response?.data?.message || 'Lỗi thêm sản phẩm vào giỏ.');
-    } finally {
-      setAddingToCart(false);
-    }
-  };
-
-  const handleBuyNow = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    const res = await addToCart(product.id, quantity);
+    if (res.requireLogin) {
       navigate('/login');
       return;
     }
 
-    try {
-      setAddingToCart(true);
-      await cartAPI.addItem({ product_id: product.id, quantity });
-      navigate('/cart');
-    } catch (err) {
-      setCartError(err.response?.data?.message || 'Lỗi xử lý đặt hàng nhanh.');
-    } finally {
-      setAddingToCart(false);
+    if (res.success) {
+      setAddedSuccess(true);
+      setTimeout(() => setAddedSuccess(false), 3000);
+    } else {
+      setCartError(res.message || 'Lỗi thêm sản phẩm vào giỏ.');
     }
+    setAddingToCart(false);
+  };
+
+  const handleBuyNow = async () => {
+    setAddingToCart(true);
+    const res = await addToCart(product.id, quantity);
+    if (res.requireLogin) {
+      navigate('/login');
+      return;
+    }
+    if (res.success) {
+      navigate('/cart');
+    } else {
+      setCartError(res.message || 'Lỗi xử lý đặt hàng nhanh.');
+    }
+    setAddingToCart(false);
   };
 
   const handleOpenLiveChat = () => {

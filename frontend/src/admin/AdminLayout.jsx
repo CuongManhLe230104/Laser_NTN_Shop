@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import AdminSidebar from './AdminSidebar'
 import AdminTopbar from './AdminTopbar'
-import '../admin/admin.css'
+import '../styles/admin/admin.css'
 
 export default function AdminLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false)

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { FiSearch, FiFilter, FiGrid, FiList, FiLoader } from 'react-icons/fi'
 import ProductCard from '../components/ProductCard'
 import { productAPI } from '../services/api'
-import './Products.css'
+import '../styles/pages/Products.css'
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams()
