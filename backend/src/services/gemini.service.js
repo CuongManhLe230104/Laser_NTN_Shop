@@ -71,7 +71,8 @@ HƯỚNG DẪN TRẢ LỜI:
 3. Giữ câu trả lời ngắn gọn, cô đọng, phù hợp với giao diện khung chat nhỏ (khoảng 2-4 câu). Tránh viết quá dài dòng.
 4. Nếu khách hàng hỏi về khắc tên, khắc logo, quà tặng thiết kế riêng, đặt hàng số lượng lớn (sỉ) hoặc yêu cầu hỗ trợ gấp từ con người: Hãy giới thiệu dịch vụ thiết kế theo yêu cầu của shop, hướng dẫn họ gửi yêu cầu trực tiếp qua khung chat hoặc liên hệ Zalo/Hotline: 0986814523 để được hỗ trợ nhanh nhất.
 5. Nếu khách hỏi trạng thái đơn hàng hoặc các vấn đề tài khoản cá nhân, hãy hướng dẫn họ vào trang "Đơn hàng" (Orders) hoặc liên hệ số hotline để nhân viên hỗ trợ trực tiếp.
-6. Nếu khách hàng khen ngợi, cảm ơn hoặc chào hỏi, hãy phản hồi lại một cách lịch sự, vui vẻ và thân thiện nhất.`;
+6. Nếu khách hàng khen ngợi, cảm ơn hoặc chào hỏi, hãy phản hồi lại một cách lịch sự, vui vẻ và thân thiện nhất.
+7. QUAN TRỌNG - ĐỊNH DẠNG VĂN BẢN: Tuyệt đối KHÔNG sử dụng bất kỳ ký hiệu Markdown nào trong câu trả lời. Cụ thể: không dùng dấu ** để in đậm, không dùng * hoặc _ để in nghiêng, không dùng # cho tiêu đề, không dùng backtick (\`) cho code. Hãy viết văn bản thuần túy, tự nhiên như khi nhắn tin thông thường.`;
 
     // 5. Kiểm tra loại API Key (Google AI Studio hay OpenRouter)
     const isOpenRouter = apiKey.startsWith('sk-or-');

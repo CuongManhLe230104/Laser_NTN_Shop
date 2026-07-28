@@ -4,6 +4,85 @@ import { FiMessageSquare, FiSend, FiX, FiPhone, FiChevronUp, FiChevronDown } fro
 import { chatAPI } from '../services/api';
 import './ChatWidget.css';
 
+// ─── Hàm parse Markdown nhẹ cho tin nhắn AI ─────────────────────────────────
+function renderBotMessage(text) {
+  if (!text) return null;
+
+  const lines = text.split('\n');
+  const elements = [];
+  let listBuffer = [];
+  let orderedBuffer = [];
+  let keyIdx = 0;
+
+  const flushLists = () => {
+    if (listBuffer.length > 0) {
+      elements.push(
+        <ul key={`ul-${keyIdx++}`} className="bot-msg-list">
+          {listBuffer.map((item, i) => (
+            <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+          ))}
+        </ul>
+      );
+      listBuffer = [];
+    }
+    if (orderedBuffer.length > 0) {
+      elements.push(
+        <ol key={`ol-${keyIdx++}`} className="bot-msg-list bot-msg-list--ordered">
+          {orderedBuffer.map((item, i) => (
+            <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+          ))}
+        </ol>
+      );
+      orderedBuffer = [];
+    }
+  };
+
+  const parseInline = (raw) =>
+    raw
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`(.*?)`/g, '<code class="bot-msg-code">$1</code>');
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      flushLists();
+      elements.push(<div key={`br-${keyIdx++}`} className="bot-msg-spacer" />);
+      return;
+    }
+
+    // Bullet list: - item hoặc * item
+    const bulletMatch = trimmed.match(/^[-*]\s+(.+)/);
+    if (bulletMatch) {
+      flushLists(); // flush ordered trước
+      listBuffer.push(parseInline(bulletMatch[1]));
+      return;
+    }
+
+    // Ordered list: 1. item
+    const orderedMatch = trimmed.match(/^\d+\.\s+(.+)/);
+    if (orderedMatch) {
+      if (listBuffer.length > 0) flushLists(); // flush bullet trước
+      orderedBuffer.push(parseInline(orderedMatch[1]));
+      return;
+    }
+
+    // Nếu không phải list thì flush và render paragraph
+    flushLists();
+    elements.push(
+      <p
+        key={`p-${keyIdx++}`}
+        className="bot-msg-para"
+        dangerouslySetInnerHTML={{ __html: parseInline(trimmed) }}
+      />
+    );
+  });
+
+  flushLists();
+  return elements;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [showStack, setShowStack] = useState(true);
@@ -239,8 +318,8 @@ export default function ChatWidget() {
                     >
                       {!isMe && <div className="chat-message__avatar">Ad</div>}
                       <div className="chat-message__bubble-wrapper">
-                        <div className="chat-message__bubble">
-                          {msg.content}
+                        <div className={`chat-message__bubble${!isMe ? ' chat-message__bubble--bot' : ''}`}>
+                          {!isMe ? renderBotMessage(msg.content) : msg.content}
                         </div>
                         <span className="chat-message__time">{msgTime}</span>
                       </div>
